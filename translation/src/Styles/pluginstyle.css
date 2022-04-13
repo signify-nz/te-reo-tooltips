@@ -1,0 +1,21 @@
+#test {
+    border-bottom: 1px dashed #000;
+}
+
+ #test:before {
+     content: attr(data-text);
+     position: absolute;
+     width: 200px;
+     padding: 10px;
+     border-radius: 10px;
+     background: #000;
+     color: #fff;
+     text-align: center;
+     display: none;
+ }
+
+ #test:hover:before {
+     display: block;
+ }
+
+/* This css is not currently connected to anything, but contains the functionality required for tooltips to function */
