@@ -14,7 +14,8 @@ const PATHS = {
   MODULES: 'node_modules',
   FILES_PATH: '../',
   ROOT: Path.resolve(),
-  SRC: Path.resolve('client/src'),
+  SRC: Path.resolve('src'),
+  // Altered from client/src
   DIST: Path.resolve('client/dist'),
 };
 
@@ -40,7 +41,8 @@ const config = [
   {
     name: 'css',
     entry: {
-      bundle: `${PATHS.SRC}/bundles/bundle.scss`,
+      bundle: `${PATHS.SRC}/Styles/pluginStyle.scss`,
+      //Altered from bundle.scss
     },
     output: {
       path: PATHS.DIST,

@@ -1,10 +1,13 @@
 <?php
 
-namespace Signify\Translation\Models;
+//namespace Signify\Translation\Models;
+namespace Signify\TeReoTooltips;
 
 use SilverStripe\ORM\DataObject;
 
 class Dictionary extends DataObject{
+
+    //specify tablenames
 
     private static $db = [
         'Title' => 'Varchar',
