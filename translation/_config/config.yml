@@ -2,12 +2,16 @@
 Name: Signify\TeReoTooltips
 ---
 
-# SilverStripe\CMS\Controllers\ContentController:
-#       extensions:
-#         - Signify\TeReoTooltips\ThemeSetterExtension
-
-PageController:
+SilverStripe\CMS\Controllers\ContentController:
       extensions:
         - Signify\TeReoTooltips\ThemeSetterExtension
+
+SilverStripe\SiteConfig\SiteConfig:
+      extensions:
+        - Signify\TeReoTooltips\SiteConfigExtension
+
+SilverStripe\CMS\Model\SiteTree:
+      extensions:
+        - Signify\TeReoTooltips\SiteTreeExtension
 
 # Extension to 'page' added in order to for debugging purposes, should ideally extend only 'contentcontroller'?

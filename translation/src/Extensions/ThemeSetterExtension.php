@@ -9,10 +9,33 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\HiddenField;
 
 class ThemeSetterExtension extends Extension
 {
-    // public function init()
+    
+    public function onAfterInit() {
+        Requirements::css('vendor/signify-nz/translation/client/dist/styles/bundle.css');
+        // Debug::dump(WordPair::get()->first()->getField('Native'));
+        // Debug::dump(WordPair::get()->getField('Native'));
+        // Debug::message(Dictionary::get()->first()->get());
+        // $dict = Dictionary::get()->first()->map('Native', 'Foreign');
+        $dict = Dictionary::get()->first();
+        $pairs = $dict->WordPair();
+        $first = $pairs->first();
+    }
+
+
+    public function updateCMSFields(FieldList $fields)
+    {
+        //$dictionary = Dictionary::get()->first();
+        Debug::message("here");
+        return $fields;
+    }
+
+        // public function init()
     // {
     //     Debug::message("Before!");
     //     parent::init();
@@ -23,15 +46,20 @@ class ThemeSetterExtension extends Extension
     // public function onBeforeInit() {
     //     Debug::message("onBeforeInit!");
     // }
-    
-    public function onAfterInit() {
-        //Debug::dump("onAfterInit!");
-        Requirements::css('vendor/signify-nz/translation/client/dist/styles/bundle.css');
-    }
 
-    // public function updateCMSFields(FieldList $fields)
+    // public function getCMSFields(FieldList $fields)
     // {
     //     Debug::message("Here!");
+    //     return FieldList::create(
+    //         TextareaField::create('Title')
+    //     );
+    // }
+
+    // public function beforeUpdateCMSFields(FieldList $fields)
+    // {
+    //     Debug::message("Here!");
+    //     $fields->addFieldToTab('Root.Main', TextareaField::create('Title'));
+    //     return $fields;
     // }
 
     // public function updateCMSFields(FieldList $fields)
