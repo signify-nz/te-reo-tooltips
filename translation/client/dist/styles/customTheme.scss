@@ -1,0 +1,4 @@
+#TeReoToolTip:before {
+    background: attr(custom-hexcode) !important;
+    //Inelegant code, consider greater specificity instead of !important
+}

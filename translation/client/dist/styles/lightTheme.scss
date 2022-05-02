@@ -1,0 +1,37 @@
+#TeReoToolTip {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.212);
+}
+
+ #TeReoToolTip:before {
+     content: attr(data-originaltext);
+     position: absolute;
+     padding: 5px;
+     border-radius: 10px;
+     background: rgba(218, 216, 216, 0.75);
+     color: rgb(27, 27, 27, 0.9);
+     text-align: center;
+     display: none;
+     transform: translateY(-30px);
+
+ }
+
+ #TeReoToolTip:hover:before {
+     display: inline-block;
+ }
+ 
+//  #Form_EditForm_DictionaryID_Holder {
+//     background-color: aqua; 
+//  }
+
+ #Form_EditForm_DictionaryIDDarkTheme {
+    // background-color: rgb(255, 0, 0); 
+    margin-left: 0%;
+ }
+
+//  #Form_EditForm_DarkTheme_Holder{
+//     background-color: rgb(0, 255, 42); 
+//  }
+
+//  #Form_EditForm_DictionaryIDDarkTheme_Holder{
+//     background-color: rgb(111, 0, 255); 
+//  }

@@ -14,4 +14,8 @@ SilverStripe\CMS\Model\SiteTree:
       extensions:
         - Signify\TeReoTooltips\SiteTreeExtension
 
-# Extension to 'page' added in order to for debugging purposes, should ideally extend only 'contentcontroller'?
+#This can be altered to insert a custom colour, will not validate value.
+Signify\TeReoTooltips\SiteTreeExtension:
+      custom_hexcode:
+        #- "#D34324"
+        - 000000

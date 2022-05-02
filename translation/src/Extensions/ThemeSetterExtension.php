@@ -4,36 +4,33 @@ namespace Signify\TeReoTooltips;
 
 use SilverStripe\Core\Extension;
 use SilverStripe\View\Requirements;
-use SilverStripe\Forms\FieldList;
-//Below for debugging only, remove once solved
-use SilverStripe\Dev\Debug;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\CMS\Controllers\ContentController;
-use SilverStripe\Forms\TextareaField;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\HiddenField;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class ThemeSetterExtension extends Extension
-{
-    
+{    
     public function onAfterInit() {
-        Requirements::css('vendor/signify-nz/translation/client/dist/styles/bundle.css');
-        // Debug::dump(WordPair::get()->first()->getField('Native'));
-        // Debug::dump(WordPair::get()->getField('Native'));
-        // Debug::message(Dictionary::get()->first()->get());
-        // $dict = Dictionary::get()->first()->map('Native', 'Foreign');
-        $dict = Dictionary::get()->first();
-        $pairs = $dict->WordPair();
-        $first = $pairs->first();
+        //First requirement should be kept, second should be removed. for testing purposes only
+        //Requirements::css('vendor/signify-nz/translation/client/dist/styles/bundle.css');
+        //Requirements::css('vendor/signify-nz/translation/src/Styles/pluginStyle.scss');
+
+        //Maybe add condition for custom css here
+        if (SiteConfig::current_site_config()->getField('DarkTheme') == 1){
+            Requirements::css('vendor/signify-nz/translation/client/dist/styles/darkTheme.scss');
+        } else {
+            Requirements::css('vendor/signify-nz/translation/client/dist/styles/lightTheme.scss');
+        }
     }
+}
 
 
-    public function updateCMSFields(FieldList $fields)
-    {
-        //$dictionary = Dictionary::get()->first();
-        Debug::message("here");
-        return $fields;
-    }
+
+
+    // public function updateCMSFields(FieldList $fields)
+    // {
+    //     $dictionary = Dictionary::get()->first();
+    //     Debug::message("here");
+    //     return $fields;
+    // }
 
         // public function init()
     // {
@@ -67,4 +64,8 @@ class ThemeSetterExtension extends Extension
     //     $dictionary = Dictionary::get()->first();
     //     $fields->dataFieldByName('WordPair')->setAttribute('data-text', $dictionary->);
     // }
-}
+
+    // Debug::dump(WordPair::get()->first()->getField('Native'));
+    // Debug::dump(WordPair::get()->getField('Native'));
+    // Debug::message(Dictionary::get()->first()->get());
+    // $dict = Dictionary::get()->first()->map('Native', 'Foreign');
