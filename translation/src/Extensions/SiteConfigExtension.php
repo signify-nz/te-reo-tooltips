@@ -2,32 +2,44 @@
 
 namespace Signify\TeReoTooltips;
 
+use SilverStripe\Forms\CheckBoxField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\View\Requirements;
 
 class SiteConfigExtension extends DataExtension
 {
 
+    private static $has_one = [
+        'Dictionary' => Dictionary::class,
+    ];
+
     private static $db = [
-        'FacebookLink' => 'Varchar',
-        'TwitterLink' => 'Varchar',
-        'GoogleLink' => 'Varchar',
-        'YouTubeLink' => 'Varchar',
-        'FooterContent' => 'Text'
+        'DarkTheme' => 'Boolean',
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldsToTab('Root.Dictionary', array (
-            TextField::create('FacebookLink','1'),
-            TextField::create('TwitterLink','2'),
-            TextField::create('GoogleLink','3'),
-            TextField::create('YouTubeLink','4')
+
+        $fields->addFieldsToTab('Root.Dictionary', array(
+            $fieldGroup = FieldGroup::create(
+                DropdownField::create('DictionaryID', 'Active Dictionary')
+                    ->setSource(Dictionary::get()->map('ID', 'Title')),
+                //Not sure quite what the map function does for me, is it neccesary?
+                CheckBoxField::create('DarkTheme', 'Tooltip dark theme'),
+            ),
+            $grid = GridField::create('name', 'Current dictionaries', Dictionary::get()),
         ));
-        $fields->addFieldsToTab('Root.Dictionary', TextareaField::create('FooterContent', 'Content for footer'));
-        //$field->addFieldsToTab('Root.Dictionary', GridField::create($name, $title, $list));
+        $gridConfig = GridFieldConfig_RecordEditor::create();
+        $grid->setConfig($gridConfig);
+        $fieldGroup->addExtraClass('FigureOutAGoodNameForMeBEM');
+
+        //This requirement is added so that styling is applied to the cms page
+        Requirements::css('vendor/signify-nz/translation/client/dist/styles/lightTheme.scss');
+        return $fields;
     }
 }
