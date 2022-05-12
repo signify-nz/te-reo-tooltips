@@ -3,13 +3,16 @@
 //namespace Signify\Translation\Models;
 namespace Signify\TeReoTooltips;
 
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Security\Member;
+use SilverStripe\Dev\Debug;
 
-class Dictionary extends DataObject{
+class Dictionary extends DataObject
+{
 
     //TODO specify tablenames
 
@@ -18,6 +21,9 @@ class Dictionary extends DataObject{
         'SourceLanguage' => 'Varchar',
         'DestinationLanguage' => 'Varchar',
     ];
+
+    // Is this an appropriate naming convention?
+    private static $table_name = 'Signify/Dictionary_Object';
 
     private static $has_many = [
         'WordPair' => WordPair::class,
@@ -34,18 +40,12 @@ class Dictionary extends DataObject{
 
     private static $summary_fields = [
         'Title' => 'Title',
-        'SourceLanguage' => 'Native language',
-        'DestinationLanguage' => 'Foreign language',
+        'SourceLanguage' => 'Base language',
+        'DestinationLanguage' => 'Destination language',
     ];
 
-    public function getCMSValidator() {
-		return new RequiredFields(array('Title', 'SourceLanguage', 'DestinationLanguage'));
-	}
-
-    // public function getCMSFields(){
-    //     $fields = FieldList::create(TabSet::create('Root'));
-    //     $fields->addFieldsToTab('Root.Main', TextField::create('Title'));
-    //     return $fields;
-    // }
-
+    public function getCMSValidator()
+    {
+        return new RequiredFields(array('Title', 'SourceLanguage', 'DestinationLanguage'));
+    }
 }
