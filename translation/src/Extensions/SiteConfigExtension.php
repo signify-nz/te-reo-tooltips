@@ -11,6 +11,8 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\View\Requirements;
 
+use SilverStripe\Dev\Debug;
+
 class SiteConfigExtension extends DataExtension
 {
 
@@ -18,13 +20,20 @@ class SiteConfigExtension extends DataExtension
         'Dictionary' => Dictionary::class,
     ];
 
+    private static $api_access = true;
+
+    //no longer necessary?
+    public function canView($member = null)
+    {
+        return true;
+    }
+
     private static $db = [
         'DarkTheme' => 'Boolean',
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
-
         $fields->addFieldsToTab('Root.Dictionary', array(
             $fieldGroup = FieldGroup::create(
                 DropdownField::create('DictionaryID', 'Active Dictionary')
@@ -36,7 +45,6 @@ class SiteConfigExtension extends DataExtension
         ));
         $gridConfig = GridFieldConfig_RecordEditor::create();
         $grid->setConfig($gridConfig);
-        $fieldGroup->addExtraClass('FigureOutAGoodNameForMeBEM');
 
         //This requirement is added so that styling is applied to the cms page
         Requirements::css('vendor/signify-nz/translation/client/dist/styles/lightTheme.scss');
