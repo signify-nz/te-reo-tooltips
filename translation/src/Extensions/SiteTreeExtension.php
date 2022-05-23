@@ -34,7 +34,7 @@ class SiteTreeExtension extends Extension
         // This function is not yet fully functional
         if ($customHexcode[0] !== 0) {
             $fields->dataFieldByName('Content')->setAttribute('data-custom-hexcode', $customHexcode[0]);
-            Requirements::css('vendor/signify-nz/translation/client/dist/styles/customTheme.scss');
+            Requirements::css('vendor/signify-nz/translation/client/dist/styles/main.css');
         }
         //Requirements::javascript('https://kit.fontawesome.com/76f1d6e702.js');
         return $fields;

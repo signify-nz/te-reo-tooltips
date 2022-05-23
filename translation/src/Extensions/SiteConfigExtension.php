@@ -47,7 +47,7 @@ class SiteConfigExtension extends DataExtension
         $grid->setConfig($gridConfig);
 
         //This requirement is added so that styling is applied to the cms page
-        Requirements::css('vendor/signify-nz/translation/client/dist/styles/lightTheme.scss');
+        Requirements::css('vendor/signify-nz/translation/client/dist/styles/main.css');
         return $fields;
     }
 }
