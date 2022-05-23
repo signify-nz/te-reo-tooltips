@@ -23,21 +23,20 @@ class SiteTreeExtension extends Extension
     {
         $dict = SiteConfig::current_site_config()->getField('Dictionary');
         $pairs = $dict->WordPair();
-        $native = implode('///', $pairs->column('Native'));
-        $foreign = implode('///', $pairs->column('Foreign'));
-        // TODO selector here may be too specific, consider making this dynamically pulled?
-        $fields->dataFieldByName('Content')->setAttribute('data-dictionary-foreign', $foreign);
-        $fields->dataFieldByName('Content')->setAttribute('data-dictionary-native', $native);
+        $base = implode('///', $pairs->column('Base'));
+        $destination = implode('///', $pairs->column('Destination'));
+        // TODO selector here may be too specific, consider making this dynamically pulled? This is no longer needed for the current method
+        $fields->dataFieldByName('Content')->setAttribute('data-dictionary-destination', $destination);
+        $fields->dataFieldByName('Content')->setAttribute('data-dictionary-base', $base);
 
         $customHexcode = $this->config()->get('custom_hexcode');
-        // will currently accept wrong values, I feel this is acceptable considering the use-case.
-        // This function is untested
+        // Will currently accept wrong values, I feel this is acceptable considering the use-case (Intended for developers only).
+        // This function is not yet fully functional
         if ($customHexcode[0] !== 0) {
-            //this needs to pass to the tooltip directly or the css needs to pull from this element.
             $fields->dataFieldByName('Content')->setAttribute('data-custom-hexcode', $customHexcode[0]);
             Requirements::css('vendor/signify-nz/translation/client/dist/styles/customTheme.scss');
         }
-
+        //Requirements::javascript('https://kit.fontawesome.com/76f1d6e702.js');
         return $fields;
     }
 }
