@@ -1,8 +1,8 @@
-#TeReoToolTip {
+.TeReoToolTip {
     border-bottom: 1px dashed rgb(255, 255, 255);
 }
 
- #TeReoToolTip:before {
+ .TeReoToolTip:before {
      content: attr(data-originaltext);
      position: absolute;
      padding: 5px;
@@ -16,6 +16,6 @@
 
  }
 
- #TeReoToolTip:hover:before {
+ .TeReoToolTip:hover:before {
      display: inline-block;
  }
