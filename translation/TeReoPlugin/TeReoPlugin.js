@@ -8,7 +8,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     var bookmark;
 
     editor.addButton('translate', {
-        //image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/koru_icon.png',
         image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
         // This image will need to be replaced with something that belongs to us, maybe the classic globe icon?
         tooltip: "Translate content",
@@ -273,6 +272,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // }
 
     //this slice method is not robust, maybe use a regex to find everything between the first '>' and the second '<'
+    // two returns?
     function restoreShortcodes(content) {
         //console.log('restoreShortcodes');
         return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline;">)(.+?)(<\/span>)/g, function (match) {
@@ -317,16 +317,24 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     }
 
     // adding a zero width space on the end means that text written after a translation will not be in the span
+    // this has a hasty bug fix, this code runs before the dictionarymap is populated, so the shortcodes are not replaced on page load. the last if else addresses this
     function replaceShortcodes(content) {
         console.log('replaceShortcodes');
         // preceded by '[TT]', anything between, followed by [/TT]
         return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
-            if (dictionaryMap.has(match.slice(4, match.length - 5).trim())) {
+            console.log(match + ' sliced to ' + match.slice(4, match.length - 5));
+            if (dictionaryMap.has(match.slice(4, match.length - 5))) {
+                //if (dictionaryMap.has(match.slice(4, match.length - 5).replace("&ZeroWidthSpace;", ''))) {
                 console.log("found = '" + match + "', replaced with span " + match.slice(4, match.length - 5) + " span");
                 return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>&#8203';
                 //&hairsp;
             } else {
-                return match.slice(4, match.length - 5);
+                if (dictionaryMap.size == 0) {
+                    console.log("empty");
+                    return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>&#8203'
+                } else {
+                    return match.slice(4, match.length - 5);
+                }
             }
         });
     }
