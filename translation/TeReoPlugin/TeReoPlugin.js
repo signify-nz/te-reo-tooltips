@@ -5,15 +5,17 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     dictionaryMap = new Map();
     var textContent = "";
     var htmlContent = "";
+    var bookmark;
 
     editor.addButton('translate', {
-        image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/koru_icon.png',
+        //image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/koru_icon.png',
+        image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
         // This image will need to be replaced with something that belongs to us, maybe the classic globe icon?
         tooltip: "Translate content",
         onclick: function () {
             translateThroughAPI(editor.getContent());
 
-            //TODO make silverstripe recognise that publishable changes have been made. Could hack it by appending a falsy value??
+            // TODO make silverstripe recognise that publishable changes have been made. Could hack it by appending a falsy value??
             // window.activeEditor = tinymce.activeEditor;
             // tinymce.activeEditor.setDirty(true);
             // tinymce.activeEditor.nodeChanged();
@@ -28,28 +30,78 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         }
     });
 
-    // editor.addMenuItem('contextTranslate', {
-    //     text: 'Translate',
-    //     onclick: function () {
-    //         console.log(editor.selection.getContent());
-    //         //DRY, this can be set into a separate function
-    //         buildDictionary();
-    //         textContent = editor.selection.getContent({ format: 'text' });
-    //         htmlContent = editor.selection.getContent();
-    //         var splitTextContent = textContent.split(/[^a-zA-Z0-9]/).filter(Boolean);
-    //         console.log(splitTextContent);
-    //         splitTextContent.forEach(searchAndReplaceHTMLRegex);
-    //         editor.selection.setContent(htmlContent);
-    //     }
-    // });
-
+    //repeated translations cause issues, fix by adding validation in checkForMatches?
     editor.addMenuItem('contextTranslate', {
         text: 'Translate',
         onclick: function () {
-            console.log(editor.selection.getContent());
-            var translation = translateSelectionThroughAPI(editor.selection.getContent())
+            console.log("Selection content = " + editor.selection.getContent({ format: 'html' }));
+            //console.log(editor.selection.getBookmark());
+            var rng = editor.selection.getRng();
+            var sel = editor.selection.getSel();
+            console.log(rng);
+            console.log(sel);
+            treeWalk(rng, sel);
+            // var translation = translateSelectionThroughAPI(editor.selection.getContent({format: 'html'}));
+            // editor.selection.setContent(translation);
         }
     });
+
+    // The value of this function over something more simple (i.e. getContent, modify, setContent) is that it circumvents tinymce's cleanup functionality 
+    // which will insert HTML tags when modifying a selection
+    function treeWalk(rng, sel) {
+        var startNode = editor.selection.getNode();
+        var walker = new tinymce.dom.TreeWalker(startNode);
+        var found = false;
+        var garbage;
+        do {
+            if (garbage) {
+                garbage.remove();
+            }
+            //order of operations might need to change - must accept if a node is both the start and end.
+            var currentNode = walker.current();
+            //this can be tidied
+            if (currentNode.isEqualNode(rng.startContainer) && currentNode.isEqualNode(rng.endContainer) && currentNode.nodeType == 3) {
+                found = false;
+                console.log(currentNode.nodeValue.substr(0, rng.startOffset));
+                console.log(checkForMatches(currentNode.nodeValue.substr(rng.startOffset, rng.endOffset), false));
+                console.log(currentNode.nodeValue.substr(rng.endOffset));
+                var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(editor.selection.getContent(), false) + currentNode.nodeValue.substr(rng.endOffset);
+                garbage = addHtmlToTextNode(currentNode, result);
+            } else if (currentNode.nodeType == 3) {
+                if (currentNode.isEqualNode(rng.endContainer)) {
+                    //var result = checkForMatches(currentNode.nodeValue, false);
+                    var result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false) + currentNode.nodeValue.substr(rng.endOffset);
+                    garbage = addHtmlToTextNode(currentNode, result);
+                    console.log('finish');
+                    found = false;
+                    //break
+                } else if (found) {
+                    var result = checkForMatches(currentNode.nodeValue, false);
+                    garbage = addHtmlToTextNode(currentNode, result);
+                } else if (currentNode.isEqualNode(rng.startContainer)) {
+                    //var result = checkForMatches(currentNode.nodeValue, false);
+                    var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
+                    garbage = addHtmlToTextNode(currentNode, result);
+                    found = true;
+                }
+            }
+        } while (walker.next());
+        if (garbage) {
+            garbage.remove();
+        }
+        editor.selection.moveToBookmark(0);
+    };
+
+    //credit: https://stackoverflow.com/questions/16662393/insert-html-into-text-node-with-javascript
+    function addHtmlToTextNode(textNode, innerHTML) {
+        var span = document.createElement('span');
+        textNode.parentNode.insertBefore(span, textNode);
+        span.insertAdjacentHTML('beforebegin', innerHTML);
+        span.remove();
+        return textNode;
+        //textNode.remove();
+        //textNode.nodeValue = '';
+    };
 
     editor.addMenuItem('addToDictionary', {
         text: 'Add to Dictionary',
@@ -57,13 +109,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             console.log(editor.selection.getContent());
             textContent = editor.selection.getContent({ format: 'text' });
             addToDictMenu(textContent);
-        }
-    });
-
-    editor.addMenuItem('test', {
-        text: 'test',
-        onclick: function () {
-            getDictionary(2);
         }
     });
 
@@ -130,7 +175,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         Http.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 console.log(Http.responseText);
-                editor.setContent(Http.responseText);
+                editor.setContent(Http.responseText, { format: 'html' });
             }
         }
     }
@@ -152,6 +197,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     }
 
     // Calls translate body on localService, provides current selection as argument. This does not scale well but may not need to? 
+    // causes an issues of <p> tags being inserted and a new line started. Solve by getting the index of selection, get copy of whole body of text, alter selection on that copy then set all.
     function translateSelectionThroughAPI(textContent) {
         const Http = new XMLHttpRequest();
         const url = '/api/v1/dictionary/translateThroughInterface/?text=' + encodeURIComponent(textContent);
@@ -160,7 +206,8 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         Http.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 console.log(Http.responseText);
-                editor.selection.setContent(Http.responseText);
+                editor.selection.setContent(Http.responseText, { format: 'html' });
+                return Http.responseText;
             }
         }
     }
@@ -184,20 +231,31 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         }
     }
 
+    // TODO hard-coded dictionary ID is not acceptable -- can provided no argument and receive default? I think currently it just returns a list of dictionaries
+    editor.on('init', function (event) {
+        getDictionary(1);
+    });
+
     // Before content is set in the editor, the shortcodes are replaced with a simple span tag to style and delineate translations
     editor.on('BeforeSetcontent', function (event) {
         console.log('BeforeSetcontent');
+        //bookmark = editor.selection.getBookmark();
         event.content = replaceShortcodes(event.content);
     });
 
-    function replaceShortcodes(content) {
-        console.log('replaceShortcodes');
-        // preceded by '[TT]', anything between, followed by [/TT]
-        return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
-            console.log("found = '" + match + "', replaced with span " + match.slice(4, match.length - 5) + " span");
-            return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>';
-        });
-    }
+    //Does not work
+    // editor.on('SetContent', function (event){
+    //     editor.selection.moveToBookmark(bookmark);
+    // });
+
+    // function replaceShortcodes(content) {
+    //     //console.log('replaceShortcodes');
+    //     // preceded by '[TT]', anything between, followed by [/TT]
+    //     return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
+    //         console.log("found = '" + match + "', replaced with span " + match.slice(4, match.length - 5) + " span");
+    //         return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>';
+    //     });
+    // }
 
     //When content is retrieved from the editor, the span tag is removed and the shortcodes are restored
     editor.on('GetContent', function (event) {
@@ -205,19 +263,122 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         event.content = restoreShortcodes(event.content);
     });
 
+    // function restoreShortcodes(content) {
+    //     //console.log('restoreShortcodes');
+    //     return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline;">)(.+?)(<\/span>)/g, function (match) {
+    //         restoration = '[TT]' + match.slice(63, match.length - 7) + '[/TT]';
+    //         console.log("restoration = " + restoration);
+    //         return restoration;
+    //     });
+    // }
+
+    //this slice method is not robust, maybe use a regex to find everything between the first '>' and the second '<'
     function restoreShortcodes(content) {
-        console.log('restoreShortcodes');
+        //console.log('restoreShortcodes');
         return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline;">)(.+?)(<\/span>)/g, function (match) {
-            restoration = '[TT]' + match.slice(63, match.length - 7) + '[/TT]';
+            if (dictionaryMap.has(match.slice(63, match.length - 7))) {
+                restoration = '[TT]' + match.slice(63, match.length - 7) + '[/TT]';
+            } else {
+                //restoration =  match.slice(63, match.length - 7);
+                console.log("Does not match a dictionary, looking deeper");
+                restoration = checkForMatches(match.slice(63, match.length - 7));
+            }
             console.log("restoration = " + restoration);
             return restoration;
         });
     }
 
+    function checkForMatches(content, shortcode = true) {
+        var openTag = '';
+        var closeTag = '';
+        if (!content) {
+            return content;
+        }
+        if (shortcode) {
+            openTag = '[TT]';
+            closeTag = '[/TT]';
+        } else {
+            openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline;">';
+            closeTag = '</span>';
+        }
+        inputList = content.split(/\b/g)
+        //inputList = content.match(/\b(\w+)\b/g);
+        //inputList = content.match(/\b(\w+\W+)/g)
+        outputList = [];
+        for (let i = 0; i < inputList.length; i++) {
+            if (dictionaryMap.has(inputList[i].trim())) {
+                outputList.push(openTag + inputList[i] + closeTag);
+            }
+            else {
+                outputList.push(inputList[i]);
+            }
+        }
+        return outputList.join('');
+    }
+
+    // adding a zero width space on the end means that text written after a translation will not be in the span
+    function replaceShortcodes(content) {
+        console.log('replaceShortcodes');
+        // preceded by '[TT]', anything between, followed by [/TT]
+        return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
+            if (dictionaryMap.has(match.slice(4, match.length - 5).trim())) {
+                console.log("found = '" + match + "', replaced with span " + match.slice(4, match.length - 5) + " span");
+                return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>&#8203';
+                //&hairsp;
+            } else {
+                return match.slice(4, match.length - 5);
+            }
+        });
+    }
+
+    // editor.on("keyup", function (e) {
+    //     if (e.keyCode == 32) {
+    //         console.log('spacebar');
+    //         bookmark = editor.selection.getBookmark(2);
+    //         var temp = replaceShortcodes(tinymce.activeEditor.getContent());
+    //         tinymce.activeEditor.setContent(temp);
+    //         editor.selection.moveToBookmark(bookmark);
+    //     }      
+    // });
+
+    // editor.on('KeyUp', function (event){
+    //     var bm = tinymce.activeEditor.selection.getBookmark();
+    //     // var temp = replaceShortcodes(tinymce.activeEditor.getContent());
+    //     // tinymce.activeEditor.setContent(temp);
+    //     tinymce.activeEditor.setContent(tinymce.activeEditor.getContent());
+    //     tinymce.activeEditor.selection.moveToBookmark(bm);
+
+    //     //replaceShortcodes(tinymce.activeEditor.getContent());
+    // });
+
 
     //
     //  Everything below this point is currently unused. Either incomplete, or outdated/being held onto for reference
     //
+
+
+
+
+
+
+
+
+
+    // editor.addMenuItem('contextTranslate', {
+    //     text: 'Translate',
+    //     onclick: function () {
+    //         console.log(editor.selection.getContent());
+    //         //DRY, this can be set into a separate function
+    //         buildDictionary();
+    //         textContent = editor.selection.getContent({ format: 'text' });
+    //         htmlContent = editor.selection.getContent();
+    //         var splitTextContent = textContent.split(/[^a-zA-Z0-9]/).filter(Boolean);
+    //         console.log(splitTextContent);
+    //         splitTextContent.forEach(searchAndReplaceHTMLRegex);
+    //         editor.selection.setContent(htmlContent);
+    //     }
+    // });
+
 
     //TODO build a check and add for capitalisation -- if capital, add lower case etc.
     function buildDictionary() {
