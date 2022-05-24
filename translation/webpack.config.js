@@ -14,8 +14,10 @@ const PATHS = {
   MODULES: 'node_modules',
   FILES_PATH: '../',
   ROOT: Path.resolve(),
-  SRC: Path.resolve('client/src'),
+  SRC: Path.resolve('src'),
+  // Altered from client/src
   DIST: Path.resolve('client/dist'),
+  TEREOPLUGIN: Path.resolve('TeReoPlugin'),
 };
 
 const externals = externalJS(ENV, PATHS);
@@ -25,7 +27,7 @@ const config = [
   {
     name: 'js',
     entry: {
-      bundle: `${PATHS.SRC}/bundles/bundle.js`,
+      bundle: `${PATHS.TEREOPLUGIN}/TeReoPlugin.js`,
     },
     output: {
       path: PATHS.DIST,
@@ -39,9 +41,9 @@ const config = [
   },
   {
     name: 'css',
-    entry: {
-      bundle: `${PATHS.SRC}/bundles/bundle.scss`,
-    },
+    entry: [
+      `${PATHS.SRC}/Styles/lightTheme.scss`,    
+    ],
     output: {
       path: PATHS.DIST,
       filename: 'styles/[name].css',
@@ -56,3 +58,36 @@ const config = [
 module.exports = (process.env.WEBPACK_CHILD)
   ? config.find((entry) => entry.name === process.env.WEBPACK_CHILD)
   : module.exports = config;
+
+
+  // const config = [
+  //   {
+  //     name: 'js',
+  //     entry: {
+  //       bundle: `${PATHS.SRC}/bundles/bundle.js`,
+  //     },
+  //     output: {
+  //       path: PATHS.DIST,
+  //       filename: 'js/[name].js',
+  //     },
+  //     devtool: (ENV !== 'production') ? 'source-map' : '',
+  //     resolve: resolveJS(ENV, PATHS),
+  //     externals,
+  //     module: moduleJS(ENV, PATHS),
+  //     plugins: pluginJS(ENV, PATHS),
+  //   },
+  //   {
+  //     name: 'css',
+  //     entry: {
+  //       bundle: `${PATHS.SRC}/Styles/pluginStyle.scss`,
+  //       //Altered from bundle.scss
+  //     },
+  //     output: {
+  //       path: PATHS.DIST,
+  //       filename: 'styles/[name].css',
+  //     },
+  //     devtool: (ENV !== 'production') ? 'source-map' : '',
+  //     module: moduleCSS(ENV, PATHS),
+  //     plugins: pluginCSS(ENV, PATHS),
+  //   },
+  // ];

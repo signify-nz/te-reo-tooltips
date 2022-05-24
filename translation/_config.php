@@ -1,12 +1,14 @@
 <?php
 
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
+use SilverStripe\View\Parsers\ShortcodeParser;
 
-HtmlEditorConfig::get('cms')->enablePlugins(['help']);
-HtmlEditorConfig::get('cms')->enablePlugins(['testplugin' => '/public/_resources/vendor/silverstripe/admin/thirdparty/tinymce/plugins/testplugin/testplugin.js']);
-HtmlEditorConfig::get('cms')->addButtonsToLine(1, 'help');
-HtmlEditorConfig::get('cms')->addButtonsToLine(1, 'button1');
-HtmlEditorConfig::get('cms')->addButtonsToLine(1, 'button2');
+//HtmlEditorConfig::get('cms')->enablePlugins(['TeReoPlugin' => '/vendor/signify-nz/translation/TeReoPlugin/TeReoPlugin.js']);
+HtmlEditorConfig::get('cms')->enablePlugins(['TeReoPlugin' => '/vendor/signify-nz/translation/client/dist/js/bundle.js']);
+HtmlEditorConfig::get('cms')->addButtonsToLine(1, 'translate');
 
-// You need this file if you don't have anything in the _config folder. If that folder exists
-// and is not empty then you can delete this file.
+//adding to the contextmenu config will override the defaults, must maintain the original configuration when adding
+HtmlEditorConfig::get('cms')->setOption('contextmenu', "contextTranslate addToDictionary " . (HtmlEditorConfig::get('cms')->getOption('contextmenu')));
+
+ShortcodeParser::get('default')->register('my_shortcode', ['ShortcodeHandler', 'MyShortCodeMethod']);
+ShortcodeParser::get('default')->register('TT', ['ShortcodeHandler', 'ShortMethod']);

@@ -1,0 +1,21 @@
+---
+Name: Signify\TeReoTooltips
+---
+
+SilverStripe\CMS\Controllers\ContentController:
+      extensions:
+        - Signify\TeReoTooltips\ThemeSetterExtension
+
+SilverStripe\SiteConfig\SiteConfig:
+      extensions:
+        - Signify\TeReoTooltips\SiteConfigExtension
+
+SilverStripe\CMS\Model\SiteTree:
+      extensions:
+        - Signify\TeReoTooltips\SiteTreeExtension
+
+#This can be altered to insert a custom colour, will not validate input value. Will take the first value listed as long, must != 0
+Signify\TeReoTooltips\SiteTreeExtension:
+      custom_hexcode:
+        #- "#D34324"
+        - 000000
