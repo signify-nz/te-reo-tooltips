@@ -1,11 +1,9 @@
 tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
-    // run buildDictionary on page load? does not need to be run everytime you press a button
     // Likely need to 'escape' regex function, possible security issue with user input. https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
-    dictionaryMap = new Map();
+    var dictionaryMap = new Map();
     var textContent = "";
     var htmlContent = "";
-    var bookmark;
 
     editor.addButton('translate', {
         image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
@@ -123,6 +121,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             Http.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     console.log("wordpair sent");
+                    dictionaryMap.set(base, destination);
                 }
             }
 
@@ -275,6 +274,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // two returns?
     function restoreShortcodes(content) {
         //console.log('restoreShortcodes');
+        let restoration = null;
         return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline;">)(.+?)(<\/span>)/g, function (match) {
             if (dictionaryMap.has(match.slice(63, match.length - 7))) {
                 restoration = '[TT]' + match.slice(63, match.length - 7) + '[/TT]';
@@ -301,10 +301,10 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline;">';
             closeTag = '</span>';
         }
-        inputList = content.split(/\b/g)
+        let inputList = content.split(/\b/g)
         //inputList = content.match(/\b(\w+)\b/g);
         //inputList = content.match(/\b(\w+\W+)/g)
-        outputList = [];
+        let outputList = [];
         for (let i = 0; i < inputList.length; i++) {
             if (dictionaryMap.has(inputList[i].trim())) {
                 outputList.push(openTag + inputList[i] + closeTag);
@@ -338,26 +338,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             }
         });
     }
-
-    // editor.on("keyup", function (e) {
-    //     if (e.keyCode == 32) {
-    //         console.log('spacebar');
-    //         bookmark = editor.selection.getBookmark(2);
-    //         var temp = replaceShortcodes(tinymce.activeEditor.getContent());
-    //         tinymce.activeEditor.setContent(temp);
-    //         editor.selection.moveToBookmark(bookmark);
-    //     }      
-    // });
-
-    // editor.on('KeyUp', function (event){
-    //     var bm = tinymce.activeEditor.selection.getBookmark();
-    //     // var temp = replaceShortcodes(tinymce.activeEditor.getContent());
-    //     // tinymce.activeEditor.setContent(temp);
-    //     tinymce.activeEditor.setContent(tinymce.activeEditor.getContent());
-    //     tinymce.activeEditor.selection.moveToBookmark(bm);
-
-    //     //replaceShortcodes(tinymce.activeEditor.getContent());
-    // });
 
 
     //
