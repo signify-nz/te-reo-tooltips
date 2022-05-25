@@ -2,13 +2,13 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     // Likely need to 'escape' regex function, possible security issue with user input. https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
     var dictionaryMap = new Map();
-    var textContent = "";
-    var htmlContent = "";
+    var bookmark;
 
     editor.addButton('translate', {
         image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
         tooltip: "Translate content",
         onclick: function () {
+            bookmark = tinymce.activeEditor.selection.getBookmark(2,true);
             editor.undoManager.add();
             console.log(editor.undoManager.hasUndo());
             translateThroughAPI(editor.getContent());
@@ -21,11 +21,13 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         text: 'Translate',
         onclick: function () {
             console.log("Selection content = " + editor.selection.getContent({ format: 'html' }));
-            var rng = editor.selection.getRng();
-            var sel = editor.selection.getSel();
-            treeWalk(rng, sel);
+            bookmark = tinymce.activeEditor.selection.getBookmark(2,true);
+            //Passing the selection argument here seems unneccesary
+            treeWalk(editor.selection.getRng(), editor.selection.getSel());
+
             // Could make this selectively fire only if changes are made? Entwine with undo functionality i think
             tinymce.activeEditor.fire('change');
+
             //This is the previous method that used the API, issues around tinymce get/set caused this to be dropped in favour of treeWalk()
             // var translation = translateSelectionThroughAPI(editor.selection.getContent({format: 'html'}));
             // editor.selection.setContent(translation);
@@ -39,32 +41,31 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         var walker = new tinymce.dom.TreeWalker(startNode);
         var found = false;
         var garbage;
+        console.log("treewalk begins here");
         do {
             if (garbage) {
+                console.log("this is being deleted: " + garbage.nodeValue);
                 garbage.remove();
+                garbage = null;
             }
             //order of operations might need to change - must accept if a node is both the start and end.
             var currentNode = walker.current();
             //this can be tidied
             if (currentNode.isEqualNode(rng.startContainer) && currentNode.isEqualNode(rng.endContainer) && currentNode.nodeType == 3) {
                 found = false;
-                // console.log(currentNode.nodeValue.substr(0, rng.startOffset));
-                // console.log(checkForMatches(currentNode.nodeValue.substr(rng.startOffset, rng.endOffset), false));
-                // console.log(currentNode.nodeValue.substr(rng.endOffset));
+                console.log("single node selection found");
                 var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(editor.selection.getContent(), false) + currentNode.nodeValue.substr(rng.endOffset);
                 garbage = addHtmlToTextNode(currentNode, result);
             } else if (currentNode.nodeType == 3) {
                 if (currentNode.isEqualNode(rng.endContainer)) {
-                    //var result = checkForMatches(currentNode.nodeValue, false);
                     var result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false) + currentNode.nodeValue.substr(rng.endOffset);
                     garbage = addHtmlToTextNode(currentNode, result);
                     found = false;
-                    //break
+                    //break of some kind?
                 } else if (found) {
                     var result = checkForMatches(currentNode.nodeValue, false);
                     garbage = addHtmlToTextNode(currentNode, result);
                 } else if (currentNode.isEqualNode(rng.startContainer)) {
-                    //var result = checkForMatches(currentNode.nodeValue, false);
                     var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
                     garbage = addHtmlToTextNode(currentNode, result);
                     found = true;
@@ -72,9 +73,13 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             }
         } while (walker.next());
         if (garbage) {
+            console.log("this is being deleted: " + garbage.nodeValue);
             garbage.remove();
         }
-        editor.selection.moveToBookmark(0);
+        console.log("treewalk finished");
+        console.log("bookmark is ");
+        console.log(bookmark);
+        editor.selection.moveToBookmark(bookmark);
     };
 
     //credit: https://stackoverflow.com/questions/16662393/insert-html-into-text-node-with-javascript
@@ -90,16 +95,17 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         text: 'Add to Dictionary',
         onclick: function () {
             console.log(editor.selection.getContent());
-            textContent = editor.selection.getContent({ format: 'text' });
-            addToDictMenu(textContent);
+            var selection = editor.selection.getContent({ format: 'text' });
+            addToDictMenu(selection);
         }
     });
 
     function newWordPair(base, destination) {
         console.log(base + destination);
         if (base == false || destination == false) {
-            tinymce.activeEditor.windowManager.alert("Cannot submit an empty field")
-            console.log("Cannot submit an empty field");
+            tinymce.activeEditor.windowManager.alert("Cannot submit an empty field!");
+        } else if (dictionaryMap.has(base)) {
+            tinymce.activeEditor.windowManager.alert("This word already has a translation! (" + dictionaryMap.get(base) + ")");
         } else {
             tinyMCE.activeEditor.windowManager.close();
             const Http = new XMLHttpRequest();
@@ -163,7 +169,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
                 console.log(Http.responseText);
                 editor.setContent(Http.responseText, { format: 'html' });
                 editor.undoManager.add();
-                console.log(editor.undoManager.hasUndo());
+                tinymce.activeEditor.selection.moveToBookmark(bookmark);
             }
         }
     }
@@ -231,34 +237,11 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         event.content = replaceShortcodes(event.content);
     });
 
-    //Does not work
-    // editor.on('SetContent', function (event){
-    //     editor.selection.moveToBookmark(bookmark);
-    // });
-
-    // function replaceShortcodes(content) {
-    //     //console.log('replaceShortcodes');
-    //     // preceded by '[TT]', anything between, followed by [/TT]
-    //     return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
-    //         console.log("found = '" + match + "', replaced with span " + match.slice(4, match.length - 5) + " span");
-    //         return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>';
-    //     });
-    // }
-
     //When content is retrieved from the editor, the span tag is removed and the shortcodes are restored
     editor.on('GetContent', function (event) {
         console.log('GetContent');
         event.content = restoreShortcodes(event.content);
     });
-
-    // function restoreShortcodes(content) {
-    //     //console.log('restoreShortcodes');
-    //     return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline;">)(.+?)(<\/span>)/g, function (match) {
-    //         restoration = '[TT]' + match.slice(63, match.length - 7) + '[/TT]';
-    //         console.log("restoration = " + restoration);
-    //         return restoration;
-    //     });
-    // }
 
     //this slice method is not robust, maybe use a regex to find everything between the first '>' and the second '<'
     // two returns?
@@ -307,7 +290,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     }
 
     // adding a zero width space on the end means that text written after a translation will not be in the span
-    // this has a hasty bug fix, this code runs before the dictionarymap is populated, so the shortcodes are not replaced on page load. the last if else addresses this
+    // this has a hasty bug fix, this code runs before the dictionarymap is populated, so the shortcodes are not replaced on page load. the last 'if else' addresses this
     function replaceShortcodes(content) {
         console.log('replaceShortcodes');
         // preceded by '[TT]', anything between, followed by [/TT]
@@ -320,7 +303,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
                 //&hairsp;
             } else {
                 if (dictionaryMap.size == 0) {
-                    console.log("empty");
+                    console.log("empty dictionary, you should only see this on init");
                     return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>&#8203'
                 } else {
                     return match.slice(4, match.length - 5);
@@ -328,201 +311,4 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             }
         });
     }
-
-
-    //
-    //  Everything below this point is currently unused. Either incomplete, or outdated/being held onto for reference
-    //
-
-
-
-
-
-
-
-
-
-    // editor.addMenuItem('contextTranslate', {
-    //     text: 'Translate',
-    //     onclick: function () {
-    //         console.log(editor.selection.getContent());
-    //         //DRY, this can be set into a separate function
-    //         buildDictionary();
-    //         textContent = editor.selection.getContent({ format: 'text' });
-    //         htmlContent = editor.selection.getContent();
-    //         var splitTextContent = textContent.split(/[^a-zA-Z0-9]/).filter(Boolean);
-    //         console.log(splitTextContent);
-    //         splitTextContent.forEach(searchAndReplaceHTMLRegex);
-    //         editor.selection.setContent(htmlContent);
-    //     }
-    // });
-
-
-    //TODO build a check and add for capitalisation -- if capital, add lower case etc.
-    function buildDictionary() {
-        var element = document.querySelector("[name='Content']");
-        var nativeArray = element.dataset.dictionaryBase.split('///');
-        var foreignArray = element.dataset.dictionaryDestination.split('///');
-        // Should not be possible for arrays to be unbalanced, every wordpair requires two entries
-        if (nativeArray.length !== foreignArray.length) {
-            throw 'Dictionaries are not an equal size!';
-        } else {
-            for (let i = 0; i < nativeArray.length; i++) {
-                dictionaryMap.set(nativeArray[i], foreignArray[i]);
-                console.log("key= " + nativeArray[i] + ", value= " + foreignArray[i]);
-            }
-        }
-    }
-
-    // A function with regex to replace only outside of html tags
-    // Thankyou stackoverflow. https://stackoverflow.com/questions/26951003/javascript-replace-all-but-only-outside-html-tags
-    // TODO improve case sensitivity - should "wORK" translate to "mAHI"? I don't think so, but "Work" should translate to "Mahi"
-    // TODO deal with multiple words. If dict has n . n + 1 ---- possible solution. 
-    function searchAndReplaceHTMLRegex(item, index, arr) {
-        if (dictionaryMap.has(item)) {
-            console.log("found " + item);
-            var regex = new RegExp("(" + item + ")(?!([^<]+)?>)", "gi");
-            var hexcode = document.querySelector("[name='Content']").dataset.customHexcode;
-            if (document.querySelector("[name='Content']").dataset.customHexcode) {
-                htmlContent = htmlContent.replace(regex, "<span id=\"TeReoToolTip\" data-customhexcode=\"" + hexcode + "\" data-originaltext=\"" + item + "\">" + dictionaryMap.get(item) + "</span>");
-            };
-            htmlContent = htmlContent.replace(regex, "<span id=\"TeReoToolTip\" data-originaltext=\"" + item + "\">" + dictionaryMap.get(item) + "</span>");
-            // add "aria-describedby=item" for accessiblity?
-        }
-        else console.log("Didn't find " + item);
-    }
-
-    function searchAndReplaceHTMLRegexFlipped() {
-        for (var x of dictionaryMap.keys()) {
-            if (tinymce.activeEditor.getContent().includes(x)) {
-                var regex = new RegExp("(" + x + ")(?!([^<]+)?>)", "gi");
-                htmlContent = htmlContent.replace(regex, "<span id=\"TeReoToolTip\" data-originaltext=\"" + x + "\">" + dictionaryMap.get(x) + "</span>");
-            }
-        }
-
-        console.log("Flipped: " + htmlContent);
-    }
-
-    function searchAndReplaceShortcodes() {
-        for (var x of dictionaryMap.keys()) {
-            if (tinymce.activeEditor.getContent().includes(x)) {
-                var regex = new RegExp("(" + x + ")(?!([^<]+)?>)", "gi");
-                htmlContent = htmlContent.replace(regex, "[TT]" + x + "[/TT]");
-            }
-        }
-    }
-
-    var translate = function () {
-        textContent = tinymce.activeEditor.getContent({ format: 'text' });
-        htmlContent = tinymce.activeEditor.getContent();
-        var splitTextContent = textContent.split(/[^a-zA-Z0-9]/).filter(Boolean);
-        //splitTextContent.forEach(searchAndReplaceHTMLRegex);
-        //searchAndReplaceHTMLRegexFlipped();
-        searchAndReplaceShortcodes();
-        tinymce.activeEditor.setContent(htmlContent);
-    };
-
-    //helper functions
-    function getAttr(s, n) {
-        n = new RegExp(n + '=\"([^\"]+)\"', 'g').exec(s);
-        return n ? window.decodeURIComponent(n[1]) : '';
-    };
-
-    function html(cls, data, con) {
-        var placeholder = url + '/img/' + getAttr(data, 'type') + '.jpg';
-        data = window.encodeURIComponent(data);
-        content = window.encodeURIComponent(con);
-
-        return '<img src="' + placeholder + '" class="mceItem ' + cls + '" ' + 'data-sh-attr="' + data + '" data-sh-content="' + con + '" data-mce-resize="false" data-mce-placeholder="1" />';
-    }
-
-    function getPairList() {
-        const Http = new XMLHttpRequest();
-        const url = '/api/v1/Signify-TeReoTooltips-Dictionary/2';
-        Http.open("GET", url);
-        Http.send();
-        Http.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                parser = new DOMParser();
-                xmlDoc = parser.parseFromString(Http.responseText, "text/xml");
-                pairHeader = xmlDoc.getElementsByTagName("WordPair")[0];
-                pairList = pairHeader.getElementsByTagName("Signify-TeReoTooltips-WordPair");
-                console.log(pairList);
-                for (let i = 0; i < pairList.length; i++) {
-                    getPair(pairList[i]);
-                }
-            }
-        }
-    }
-
-    function getPair(item) {
-        console.log(item.getAttribute("href"));
-        //This will work, but won't scale well. If a Dictionary has 1000 pairs, you don't want to wait on 2001 http requests. Can you get the dictionary to retrieve it's wordpairs?
-    }
-
-    // Modify the translate function to limit repetition
-    var translateModular = function (text, html) {
-        var splitText = text.split(/[^a-zA-Z0-9]/).filter(Boolean);
-        splitText.forEach(searchAndReplaceHTMLRegex);
-        tinymce.activeEditor.setContent(html);
-    };
-
-    //Functions on the plain text input, removes formatting!
-    function searchAndReplace(item, index, arr) {
-        if (dictionaryMap.has(item)) {
-            console.log("found " + item);
-            textContent = textContent.replace(item, "<span id=\"TeReoToolTip\" data-originaltext=\"" + item + "\">" + dictionaryMap.get(item) + "</span>");
-        }
-        else console.log("Didn't find " + item);
-    }
-
-    //Functions on html input, causes issues when you insert the target substring back in html tags!
-    function searchAndReplaceHTML(item, index, arr) {
-        if (dictionaryMap.has(item)) {
-            console.log("found " + item);
-            htmlContent = htmlContent.replace(item, "<span id=\"TeReoToolTip\" data-originaltext=\"" + item + "\">" + dictionaryMap.get(item) + "</span>");
-        }
-        else console.log("Didn't find " + item);
-    }
-
-    //Testing out an active listener style translation, currently disabled
-    editor.on("keyup", function (e) {
-        if (e.keyCode == 32) {
-            //return handleSpacebar(editor);
-        }
-    });
-
-    function handleSpacebar(editor) {
-        return readLine(editor);
-    };
-
-    function readLine(editor) {
-        //range will be the number of characters from the beginning of the the HTML element plus 1, after pressing spacebar
-        //var offset = editor.selection.getRng().startOffset;
-        //console.log(editor.selection);
-        var startNode = editor.selection.getNode();
-        var walker = new tinymce.dom.TreeWalker(startNode);
-        do {
-            var currentNode = walker.current();
-            console.log(currentNode.nodeValue)
-            if (currentNode.nodeType == 3) {
-                if (currentNode.nodeValue.includes("work")) {
-                    console.log("Found work in ->" + currentNode.nodeValue)
-                    var stringHolder = currentNode.nodeValue;
-                    stringHolder = stringHolder.replace('work', '<em>mahi</em>');
-                    console.log("stringholder -> " + stringHolder);
-                    currentNode.nodeValue = stringHolder;
-                    //currentNode.replace(stringHolder);
-                    console.log("current node after replace -> " + currentNode.nodeValue);
-                    //replace node with a new node containing the edited content?
-                    //replace child could be an option? I don't know how you do a prompt that waits for the user..
-                    //could possibly provide a filter argument to treewalker to remove falsy (optimisation)
-                    //sax parser may be the answer for waiting on a user input?
-                }
-            }
-        } while (walker.next());
-        // var text = document.createTextNode("SPACEBAR");
-        // editor.dom.replace(text, editor.selection, false);
-    };
-
 });
