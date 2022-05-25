@@ -8,7 +8,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
         tooltip: "Translate content",
         onclick: function () {
-            bookmark = tinymce.activeEditor.selection.getBookmark(2,true);
+            bookmark = tinymce.activeEditor.selection.getBookmark(2, true);
             editor.undoManager.add();
             console.log(editor.undoManager.hasUndo());
             translateThroughAPI(editor.getContent());
@@ -21,7 +21,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         text: 'Translate',
         onclick: function () {
             console.log("Selection content = " + editor.selection.getContent({ format: 'html' }));
-            bookmark = tinymce.activeEditor.selection.getBookmark(2,true);
+            bookmark = tinymce.activeEditor.selection.getBookmark(2, true);
             //Passing the selection argument here seems unneccesary
             treeWalk(editor.selection.getRng(), editor.selection.getSel());
 
@@ -52,9 +52,15 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             var currentNode = walker.current();
             //this can be tidied
             if (currentNode.isEqualNode(rng.startContainer) && currentNode.isEqualNode(rng.endContainer) && currentNode.nodeType == 3) {
+                // found = false;
+                // console.log("single node selection found");
+                // var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(editor.selection.getContent(), false) + currentNode.nodeValue.substr(rng.endOffset);
+                // console.log("result is: " + result);
+                // console.log("encoded result is: " + escapeHtml(result));
+                // garbage = addHtmlToTextNode(currentNode, result);
                 found = false;
                 console.log("single node selection found");
-                var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(editor.selection.getContent(), false) + currentNode.nodeValue.substr(rng.endOffset);
+                var result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset)) + checkForMatches(editor.selection.getContent(), false) + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
                 garbage = addHtmlToTextNode(currentNode, result);
             } else if (currentNode.nodeType == 3) {
                 if (currentNode.isEqualNode(rng.endContainer)) {
@@ -89,6 +95,16 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         span.insertAdjacentHTML('beforebegin', innerHTML);
         span.remove();
         return textNode;
+    };
+
+    //credit: https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     };
 
     editor.addMenuItem('addToDictionary', {
