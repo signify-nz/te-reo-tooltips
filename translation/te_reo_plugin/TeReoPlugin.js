@@ -6,7 +6,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     var htmlContent = "";
 
     editor.addButton('translate', {
-        image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
+        image: '/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
         // This image will need to be replaced with something that belongs to us, maybe the classic globe icon?
         tooltip: "Translate content",
         onclick: function () {
@@ -112,8 +112,28 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     function newWordPair(base, destination) {
         console.log(base + destination);
         if (base == false || destination == false) {
+            tinymce.activeEditor.windowManager.open({
+                type: 'messagebox',
+                name: 'msg',
+                size: '40',
+                label: 'message',
+                value: 'Cannot submit an empty field!',
+                text: 'Cannot submit an empty field!',
+                buttons: [
+                    {
+                        text: "Okay", subtype: 'primary', onclick: function () {
+                            tinymce.activeEditor.windowManager.close();
+                        }
+                    },
+                    { type: "spacer", flex: 1 },
+                ],
+                onSubmit: function(){
+                    tinymce.activeEditor.windowManager.close();
+                },
+            });
             console.log("Cannot submit an empty field");
         } else {
+            tinyMCE.activeEditor.windowManager.close();
             const Http = new XMLHttpRequest();
             const url = '/api/v1/dictionary/addWordPair/' + "?base=" + base + "&destination=" + destination;
             Http.open("POST", url);
