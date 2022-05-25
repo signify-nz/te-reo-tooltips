@@ -7,23 +7,12 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     editor.addButton('translate', {
         image: 'public/_resources/vendor/signify-nz/translation/client/dist/img/globe-light.svg',
-        // This image will need to be replaced with something that belongs to us, maybe the classic globe icon?
         tooltip: "Translate content",
         onclick: function () {
+            editor.undoManager.add();
+            console.log(editor.undoManager.hasUndo());
             translateThroughAPI(editor.getContent());
-
-            // TODO make silverstripe recognise that publishable changes have been made. Could hack it by appending a falsy value??
-            // window.activeEditor = tinymce.activeEditor;
-            // tinymce.activeEditor.setDirty(true);
-            // tinymce.activeEditor.nodeChanged();
-            // tinymce.triggerSave();
-            // console.log(tinymce.activeEditor.isDirty());
-
-            // When changes are made within the text editor, the container element gains the class 'changed'
-            // Manually adding this does not trigger a 'publishable' event
-            // if (element.classList.contains("changed")==false){
-            //     element.classList.add("changed");
-            // }
+            tinymce.activeEditor.fire('change');
         }
     });
 
@@ -32,12 +21,12 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         text: 'Translate',
         onclick: function () {
             console.log("Selection content = " + editor.selection.getContent({ format: 'html' }));
-            //console.log(editor.selection.getBookmark());
             var rng = editor.selection.getRng();
             var sel = editor.selection.getSel();
-            console.log(rng);
-            console.log(sel);
             treeWalk(rng, sel);
+            // Could make this selectively fire only if changes are made? Entwine with undo functionality i think
+            tinymce.activeEditor.fire('change');
+            //This is the previous method that used the API, issues around tinymce get/set caused this to be dropped in favour of treeWalk()
             // var translation = translateSelectionThroughAPI(editor.selection.getContent({format: 'html'}));
             // editor.selection.setContent(translation);
         }
@@ -59,9 +48,9 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             //this can be tidied
             if (currentNode.isEqualNode(rng.startContainer) && currentNode.isEqualNode(rng.endContainer) && currentNode.nodeType == 3) {
                 found = false;
-                console.log(currentNode.nodeValue.substr(0, rng.startOffset));
-                console.log(checkForMatches(currentNode.nodeValue.substr(rng.startOffset, rng.endOffset), false));
-                console.log(currentNode.nodeValue.substr(rng.endOffset));
+                // console.log(currentNode.nodeValue.substr(0, rng.startOffset));
+                // console.log(checkForMatches(currentNode.nodeValue.substr(rng.startOffset, rng.endOffset), false));
+                // console.log(currentNode.nodeValue.substr(rng.endOffset));
                 var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(editor.selection.getContent(), false) + currentNode.nodeValue.substr(rng.endOffset);
                 garbage = addHtmlToTextNode(currentNode, result);
             } else if (currentNode.nodeType == 3) {
@@ -69,7 +58,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
                     //var result = checkForMatches(currentNode.nodeValue, false);
                     var result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false) + currentNode.nodeValue.substr(rng.endOffset);
                     garbage = addHtmlToTextNode(currentNode, result);
-                    console.log('finish');
                     found = false;
                     //break
                 } else if (found) {
@@ -96,8 +84,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         span.insertAdjacentHTML('beforebegin', innerHTML);
         span.remove();
         return textNode;
-        //textNode.remove();
-        //textNode.nodeValue = '';
     };
 
     editor.addMenuItem('addToDictionary', {
@@ -112,8 +98,10 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     function newWordPair(base, destination) {
         console.log(base + destination);
         if (base == false || destination == false) {
+            tinymce.activeEditor.windowManager.alert("Cannot submit an empty field")
             console.log("Cannot submit an empty field");
         } else {
+            tinyMCE.activeEditor.windowManager.close();
             const Http = new XMLHttpRequest();
             const url = '/api/v1/dictionary/addWordPair/' + "?base=" + base + "&destination=" + destination;
             Http.open("POST", url);
@@ -174,6 +162,8 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             if (this.readyState == 4 && this.status == 200) {
                 console.log(Http.responseText);
                 editor.setContent(Http.responseText, { format: 'html' });
+                editor.undoManager.add();
+                console.log(editor.undoManager.hasUndo());
             }
         }
     }
