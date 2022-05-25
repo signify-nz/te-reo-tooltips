@@ -1,0 +1,24 @@
+.TeReoToolTip {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.212);
+}
+
+ .TeReoToolTip:before {
+     content: attr(data-originaltext);
+     position: absolute;
+     padding: 5px;
+     border-radius: 10px;
+     background: attr(data-customhexcode);
+     color: rgba(27, 27, 27, 0.9);
+     text-align: center;
+     display: none;
+     transform: translateY(-30px);
+
+ }
+
+ .TeReoToolTip:hover:before {
+     display: inline-block;
+ }
+
+ .Form_EditForm_DictionaryIDDarkTheme {
+    margin-left: 0%;
+ }
