@@ -69,14 +69,20 @@ class LocalService implements ServiceInterface
         return $text;
     }
 
-    function addWordPair($Base, $Destination)
+    function addWordPair($Base, $Destination, $ID = null)
     {
         //there needs to be some validation here -- does this wordpair exist already? are the fields identical?
-        $dict = SiteConfig::current_site_config()->getField('Dictionary');
+        $dict = null;
+        if ($ID != null) {
+            $dict = Dictionary::get_by_id($ID);
+        } else {
+            $dict = SiteConfig::current_site_config()->getField('Dictionary');
+        }
         $pair = new WordPair();
         $pair->Base = $Base;
         $pair->Destination = $Destination;
         $pair->write();
         $dict->WordPair()->add($pair);
+        return $pair;
     }
 }

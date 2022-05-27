@@ -2,8 +2,9 @@
 
 namespace Signify\TeReoTooltips;
 
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class DictionaryApiController extends Controller
 {
@@ -27,9 +28,24 @@ class DictionaryApiController extends Controller
 
     public function dictionaries(HTTPRequest $request)
     {
-        //If dictionary ID is provided, return all wordpairs associated to that dictionary. Otherwise return list of dictionaries.
-        if ($request->param('ID')) {
-            $dict = Dictionary::get_by_id($request->param('ID'));
+        //If dictionary ID is provided, return all wordpairs associated to that dictionary, if dictionary = 0 -> get active dictiionary. If no ID, return list of dictionaries.
+        // THIS IS DEPENDENT ON ID STARTING FROM 1! check this plz
+        $ID = $request->param('ID');
+        if ($ID) {
+            $dict = Dictionary::get_by_id($ID);
+            $pairs = $dict->WordPair();
+            $pairList = [];
+            foreach ($pairs as $pair) {
+                array_push($pairList, [
+                    'ID' => $pair->ID,
+                    'Base' => $pair->Base,
+                    'Destination' => $pair->Destination
+                ]);
+            }
+            $pairList = json_encode($pairList);
+            $this->getResponse()->setBody($pairList);
+        } else if ($ID != null) { // $ID == 0 caused issues
+            $dict = SiteConfig::current_site_config()->getField('Dictionary');
             $pairs = $dict->WordPair();
             $pairList = [];
             foreach ($pairs as $pair) {
@@ -70,11 +86,26 @@ class DictionaryApiController extends Controller
 
     //takes entire body of text and returns with shortcodes inserted where appropriate
     //This does not scale and will break if text body is too large
+    // public function translateThroughInterface(HTTPRequest $request)
+    // {
+    //     $service = new LocalService;
+    //     $queryText = $request->getVar('text');
+    //     $translation = $service->translateBody($queryText, $request->param('ID'));
+    //     //this is a dummy error function
+    //     if ($translation == 'Error 404') {
+    //         $this->getResponse()->setStatusCode(404);
+    //         return $translation;
+    //     }
+    //     $this->getResponse()->setBody($translation);
+    //     //Debug::dump($queryText);
+    //     return $this->getResponse();
+    // }
+
     public function translateThroughInterface(HTTPRequest $request)
     {
         $service = new LocalService;
-        $queryText = $request->getVar('text');
-        $translation = $service->translateBody($queryText, $request->param('ID'));
+        $queryText = $request->getBody();
+        $translation = $service->translateBody($queryText);
         //this is a dummy error function
         if ($translation == 'Error 404') {
             $this->getResponse()->setStatusCode(404);
@@ -109,10 +140,18 @@ class DictionaryApiController extends Controller
     public function addWordPair(HTTPRequest $request)
     {
         //TODO if falsy, return error? already somewhat validated in js
+        $id = $request->param('ID');
         $base = $request->getVar('base');
         $destination = $request->getVar('destination');
         $service = new LocalService;
-        $service->addWordPair($base, $destination);
+        $newPair = $service->addWordPair($base, $destination, $id);
+        $response = [
+            'ID' => $newPair->ID,
+            'Base' => $newPair->Base,
+            'Destination' => $newPair->Destination
+        ];
+        $response = json_encode($response);
+        $this->getResponse()->setBody($response);
         return $this->getResponse();
     }
 }
