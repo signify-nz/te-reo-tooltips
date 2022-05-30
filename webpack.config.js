@@ -42,7 +42,7 @@ const config = [
   {
     name: 'css',
     entry: [
-      `${PATHS.CSS}/lightTheme.scss`,    
+      `${PATHS.CSS}/main.scss`,    
     ],
     output: {
       path: PATHS.DIST,
