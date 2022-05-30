@@ -30,7 +30,7 @@ class LocalService implements ServiceInterface
                 return $pair->getField("Destination");
             }
         }
-        return $text;
+        return null;
     }
 
     //Search for any number of matches on larger body of text
