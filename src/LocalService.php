@@ -2,6 +2,7 @@
 
 namespace Signify\TeReoTooltips;
 
+use Exception;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class LocalService implements ServiceInterface
@@ -12,54 +13,31 @@ class LocalService implements ServiceInterface
     public function checkLanguage($language)
     {
         if ($language !== null) {
-            return Dictionary::get_by_id($language);
-        } else {
-            return SiteConfig::current_site_config()->getField('Dictionary');
+            if (Dictionary::get_by_id($language)) {
+                return Dictionary::get_by_id($language);
+            }
         }
-        // add check to see if dictionary is null. i.e. invalid ID provided. or perhaps have try/catch in main function
+        return SiteConfig::current_site_config()->getField('Dictionary');
     }
 
-    //search for a strictly exact match on a string
+    //search for an exact match on a string
     public function translateWord($text, $languageID = null)
     {
         $dict = $this->checkLanguage($languageID);
-        if ($dict == null) {
-            return "This should be a 400 status code";
-        }
-        $pairs = $dict->WordPair();
-        foreach ($pairs as $word) {
-            if ($text == $word->getField('Base')) {
-                return $word->getField("Destination");
+        $pairList = $dict->WordPair();
+        foreach ($pairList as $pair) {
+            if ($text == $pair->getField('Base')) {
+                return $pair->getField("Destination");
             }
         }
-        return false;
-    }
-
-    //Search for an exact match to an extended string -- incomplete
-    //This functionality is covered by the translate word function
-    public function translatePhrase($text, $languageID = null)
-    {
-        $dict = $this->checkLanguage($languageID);
-        if ($dict == null) {
-            return "This should be a 400 status code";
-        }
-        $pairs = $dict->WordPair();
+        return $text;
     }
 
     //Search for any number of matches on larger body of text
-    //maybe cast an array, return indexes in json format?
     public function translateBody($text, $languageID = null)
     {
         $dict = $this->checkLanguage($languageID);
-        // if ($dict == null) {
-        //     return "Error 404";
-        // }
-        //try {
-        //this error is not being caught
         $pairs = $dict->WordPair();
-        // } catch (\Exception $e) {
-        //     return 'Caught exception: ' .  $e->getMessage() . "\n";
-        // }
         foreach ($pairs as $word) {
             //this replaces text with a shortcode, only if text is not immediately followed by [/TT] i.e. is already a shortcode. /g is implicit in preg_replace.
             //regex look behind not supported in some browsers. Target must be preceded and followed by a non-letter character, this is so that partial words are not selected 
@@ -71,13 +49,8 @@ class LocalService implements ServiceInterface
 
     function addWordPair($Base, $Destination, $ID = null)
     {
-        //there needs to be some validation here -- does this wordpair exist already? are the fields identical?
-        $dict = null;
-        if ($ID != null) {
-            $dict = Dictionary::get_by_id($ID);
-        } else {
-            $dict = SiteConfig::current_site_config()->getField('Dictionary');
-        }
+        // Input validation occurs at javascript level
+        $dict = $this->checkLanguage($ID);
         $pair = new WordPair();
         $pair->Base = $Base;
         $pair->Destination = $Destination;
