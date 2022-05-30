@@ -6,7 +6,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     var bookmark;
 
     editor.addButton('translate', {
-        image: 'public/_resources/vendor/signify-nz/te_reo_tooltips/client/dist/img/globe-light.svg',
+        image: '/_resources/vendor/signify-nz/te_reo_tooltips/client/dist/img/globe-light.svg',
         tooltip: "Translate content",
         onclick: function () {
             bookmark = tinymce.activeEditor.selection.getBookmark(2, true);
