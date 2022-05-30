@@ -1,6 +1,5 @@
 <?php
 
-//namespace Signify\Translation\Models;
 namespace Signify\TeReoTooltips;
 
 use SilverStripe\ORM\ArrayLib;
@@ -9,7 +8,6 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
-use SilverStripe\Dev\Debug;
 
 class WordPair extends DataObject
 {
@@ -31,11 +29,6 @@ class WordPair extends DataObject
         'Destination' => 'Destination Language',
     ];
 
-    public function canView($member = null)
-    {
-        return true;
-    }
-
     private static $api_access = true;
 
     public function getCMSFields()
@@ -48,7 +41,6 @@ class WordPair extends DataObject
         ]);
         $limitedConfig->removeButtons(ArrayLib::array_values_recursive($limitedConfig->getButtons()));
         $limitedConfig->setButtonsForLine(1, array('charmap'));
-        // Add macrons
         $limitedConfig->enablePlugins('charmap');
         $limitedConfig->setOption('charmap_append', [
             ['256', 'A - macron'],

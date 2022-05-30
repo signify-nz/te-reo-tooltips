@@ -14,8 +14,6 @@ use SilverStripe\Dev\Debug;
 class Dictionary extends DataObject
 {
 
-    //TODO specify tablenames
-
     private static $db = [
         'Title' => 'Varchar',
         'SourceLanguage' => 'Varchar',

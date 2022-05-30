@@ -22,12 +22,6 @@ class SiteConfigExtension extends DataExtension
 
     private static $api_access = true;
 
-    //no longer necessary?
-    public function canView($member = null)
-    {
-        return true;
-    }
-
     private static $db = [
         'DarkTheme' => 'Boolean',
     ];
@@ -38,7 +32,6 @@ class SiteConfigExtension extends DataExtension
             $fieldGroup = FieldGroup::create(
                 DropdownField::create('DictionaryID', 'Active Dictionary')
                     ->setSource(Dictionary::get()->map('ID', 'Title')),
-                //Not sure quite what the map function does for me, is it neccesary?
                 CheckBoxField::create('DarkTheme', 'Tooltip dark theme'),
             ),
             $grid = GridField::create('name', 'Current dictionaries', Dictionary::get()),
@@ -47,7 +40,7 @@ class SiteConfigExtension extends DataExtension
         $grid->setConfig($gridConfig);
 
         //This requirement is added so that styling is applied to the cms page
-        Requirements::css('vendor/signify-nz/translation/client/dist/styles/main.css');
+        Requirements::css('vendor/signify-nz/te_reo_tooltips/client/dist/styles/main.css');
         return $fields;
     }
 }
