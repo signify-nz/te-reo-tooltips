@@ -1,5 +1,5 @@
 {
-    "name": "signify-nz/te-reo-tooltips",
+    "name": "signify-nz/te_reo_tooltips",
     "description": "A module for quick translations.",
     "type": "silverstripe-vendormodule",
     "keywords": [
