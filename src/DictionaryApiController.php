@@ -9,8 +9,6 @@ use SilverStripe\SiteConfig\SiteConfig;
 class DictionaryApiController extends Controller
 {
 
-    //Consider defining one service for all functions to use.
-
     private static $allowed_actions = [
         'index',
         'dictionaries',
@@ -22,16 +20,26 @@ class DictionaryApiController extends Controller
 
     public function index(HTTPRequest $request)
     {
-        $this->getResponse()->setStatusCode(404);
-        return json_encode(["error" => "Something went very wrong.", "id" => 12]);
+        $dictionaries = Dictionary::get();
+        $dictionaryList = [];
+
+        foreach ($dictionaries as $dict) {
+            array_push($dictionaryList, [
+                'ID' => $dict->ID,
+                'Title' => $dict->Title,
+                'SourceLanguage' => $dict->SourceLanguage,
+                'DestinationLanguage' => $dict->DestinationLanguage
+            ]);
+        }
+        $dictionaryList = json_encode($dictionaryList);
+        $this->getResponse()->setBody($dictionaryList);
+        return $this->getResponse();
     }
 
     public function dictionaries(HTTPRequest $request)
     {
-        //If dictionary ID is provided, return all wordpairs associated to that dictionary, if dictionary = 0 -> get active dictiionary. If no ID, return list of dictionaries.
-        // THIS IS DEPENDENT ON ID STARTING FROM 1! check this plz
         $ID = $request->param('ID');
-        if ($ID) {
+        if (is_numeric($ID)) {
             $dict = Dictionary::get_by_id($ID);
             $pairs = $dict->WordPair();
             $pairList = [];
@@ -44,7 +52,7 @@ class DictionaryApiController extends Controller
             }
             $pairList = json_encode($pairList);
             $this->getResponse()->setBody($pairList);
-        } else if ($ID != null) { // $ID == 0 caused issues
+        } else {
             $dict = SiteConfig::current_site_config()->getField('Dictionary');
             $pairs = $dict->WordPair();
             $pairList = [];
@@ -57,20 +65,6 @@ class DictionaryApiController extends Controller
             }
             $pairList = json_encode($pairList);
             $this->getResponse()->setBody($pairList);
-        } else {
-            $dictionaries = Dictionary::get();
-            $dictionaryList = [];
-
-            foreach ($dictionaries as $dict) {
-                array_push($dictionaryList, [
-                    'ID' => $dict->ID,
-                    'Title' => $dict->Title,
-                    'SourceLanguage' => $dict->SourceLanguage,
-                    'DestinationLanguage' => $dict->DestinationLanguage
-                ]);
-            }
-            $dictionaryList = json_encode($dictionaryList);
-            $this->getResponse()->setBody($dictionaryList);
         };
 
         $this->getResponse()->addHeader("Content-type", "application/json");
@@ -84,42 +78,15 @@ class DictionaryApiController extends Controller
         return $this->getResponse();
     }
 
-    //takes entire body of text and returns with shortcodes inserted where appropriate
-    //This does not scale and will break if text body is too large
-    // public function translateThroughInterface(HTTPRequest $request)
-    // {
-    //     $service = new LocalService;
-    //     $queryText = $request->getVar('text');
-    //     $translation = $service->translateBody($queryText, $request->param('ID'));
-    //     //this is a dummy error function
-    //     if ($translation == 'Error 404') {
-    //         $this->getResponse()->setStatusCode(404);
-    //         return $translation;
-    //     }
-    //     $this->getResponse()->setBody($translation);
-    //     //Debug::dump($queryText);
-    //     return $this->getResponse();
-    // }
-
     public function translateThroughInterface(HTTPRequest $request)
     {
         $service = new LocalService;
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
-        //this is a dummy error function
-        if ($translation == 'Error 404') {
-            $this->getResponse()->setStatusCode(404);
-            return $translation;
-        }
         $this->getResponse()->setBody($translation);
-        //Debug::dump($queryText);
         return $this->getResponse();
     }
 
-    // translate and return only selected words, an attempt to address scalability
-    // TODO decide if this takes a language argument
-    // implement an index argument, this means that js doesn't need to hold on to position?
-    // is a hyphen sensible to split?
     public function translateByWord(HTTPRequest $request)
     {
         $service = new LocalService;
@@ -139,7 +106,6 @@ class DictionaryApiController extends Controller
 
     public function addWordPair(HTTPRequest $request)
     {
-        //TODO if falsy, return error? already somewhat validated in js
         $id = $request->param('ID');
         $base = $request->getVar('base');
         $destination = $request->getVar('destination');
