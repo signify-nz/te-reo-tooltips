@@ -33,23 +33,8 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             //This is the previous method that used the API, issues around tinymce get/set caused this to be dropped in favour of treeWalk()
             // var translation = translateSelectionThroughAPI(editor.selection.getContent({format: 'html'}));
             // editor.selection.setContent(translation);
-
-            addEventHandler();
         }
     });
-
-    function addEventHandler() {
-        var elements = document.getElementsByClassName("TeReoTooltip");
-
-        var myFunction = function (event) {
-            console.log('mouse over');
-            event.target.style.color = "purple";
-        };
-
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].addEventListener('mouseover', myFunction, false);
-        }
-    };
 
     // The value of this function over something more simple (i.e. getContent, modify, setContent) is that it circumvents tinymce's cleanup functionality 
     // which will insert HTML tags when modifying a selection
@@ -220,7 +205,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     function getDictionaries() {
         const Http = new XMLHttpRequest();
-        const url = '/api/v1/index/';
+        const url = '/api/v1/dictionary/index/';
         Http.open("GET", url);
         Http.send();
         Http.onreadystatechange = function () {
