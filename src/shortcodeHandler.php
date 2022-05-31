@@ -13,15 +13,15 @@ class ShortcodeHandler extends SiteTree
         $hexcode = SiteTree::config()->get('custom_hexcode')[0];
         if ($hexcode) {
             if ($translation) {
-                return "<span class=\"TeReoToolTip CustomTheme\" data-originaltext=\"$content\" aria-describedby=\"The meaning of '$translation' is '$content'\"  style=\"---tooltip-customhexcode: " . $hexcode . "\">" . $translation . "</span>";
+                return "<span class=\"TeReoToolTip CustomTheme\" data-originaltext=\"$content\" aria-label=\"The meaning of '$translation' is '$content'\"  style=\"---tooltip-customhexcode: " . $hexcode . "\">" . $translation . "</span>";
             } else return $content;
         } else if (SiteConfig::current_site_config()->getField('DarkTheme') == 1) {
             if ($translation) {
-                return "<span class=\"TeReoToolTip DarkTheme\" data-originaltext=\"$content\" aria-describedby=\"The meaning of '$translation' is '$content'\" >" . $translation . "</span>";
+                return "<span class=\"TeReoToolTip DarkTheme\" data-originaltext=\"$content\" aria-label=\"The meaning of '$translation' is '$content'\" >" . $translation . "</span>";
             } else return $content;
         } else {
             if ($translation) {
-                return "<span class=\"TeReoToolTip\" data-originaltext=\"$content\" aria-describedby=\"The meaning of \'$translation\' is '$content'\" >" . $translation . "</span>";
+                return "<span class=\"TeReoToolTip\" data-originaltext=\"$content\" aria-label=\"The meaning of \'$translation\' is '$content'\" >" . $translation . "</span>";
             } else return $content;
         }
     }
