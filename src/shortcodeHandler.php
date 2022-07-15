@@ -10,7 +10,7 @@ class ShortcodeHandler extends SiteTree
     {
         $service = new LocalService;
         $translation = $service->translateWord($content);
-        $hexcode = SiteTree::config()->get('custom_hexcode')[0];
+        $hexcode = SiteTree::config()->get('custom_hexcode');
         if ($hexcode) {
             if ($translation) {
                 return "<span class=\"TeReoToolTip CustomTheme\" data-originaltext=\"$content\" aria-label=\"The meaning of '$translation' is '$content'\"  style=\"---tooltip-customhexcode: " . $hexcode . "\">" . $translation . "</span>";

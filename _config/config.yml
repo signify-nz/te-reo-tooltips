@@ -1,5 +1,5 @@
 ---
-Name: Signify\TeReoTooltips
+Name: signify-te-reo-tooltips
 ---
 
 SilverStripe\CMS\Controllers\ContentController:
@@ -14,8 +14,7 @@ SilverStripe\CMS\Model\SiteTree:
       extensions:
         - Signify\TeReoTooltips\SiteTreeExtension
 
-#This can be altered to insert a custom colour, will not validate input value. Will take the first value listed as long, must != 0
+#This can be altered to insert a custom colour, will not validate input value. e.g. '#D34324'
 Signify\TeReoTooltips\SiteTreeExtension:
       custom_hexcode:
-        #- "#D34324"
-        - 000000
+        0
