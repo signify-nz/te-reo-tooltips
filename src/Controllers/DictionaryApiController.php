@@ -5,7 +5,7 @@ namespace Signify\TeReoTooltips;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\SiteConfig\SiteConfig;
-
+use SilverStripe\Core\Injector\Injector;
 
 class DictionaryApiController extends Controller
 {
@@ -15,7 +15,6 @@ class DictionaryApiController extends Controller
         'dictionaries',
         'translateThroughInterface',
         'addWordPair',
-        'translateByWord',
     ];
 
     public function index(HTTPRequest $request)
@@ -80,27 +79,12 @@ class DictionaryApiController extends Controller
 
     public function translateThroughInterface(HTTPRequest $request)
     {
-        $service = new LocalService;
+        $service = Injector::inst()->create('LocalService');
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
         $this->getResponse()->setBody($translation);
-        return $this->getResponse();
-    }
-
-    public function translateByWord(HTTPRequest $request)
-    {
-        $service = new LocalService;
-        $untranslatedList = explode('---', $request->getVar('text'));
-        $translatedList = [];
-        foreach ($untranslatedList as $baseWord) {
-            $destinationWord = $service->translateWord($baseWord);
-            array_push($translatedList, [
-                'original' => $baseWord,
-                'new' => $destinationWord
-            ]);
-        }
-        $translatedList = json_encode($translatedList);
-        $this->getResponse()->setBody($translatedList);
+        $this->getResponse()->addHeader("Access-Control-Allow-Methods", "POST");
+        $this->getResponse()->addHeader("Access-Control-Allow-Headers", "x-requested-with");
         return $this->getResponse();
     }
 
@@ -118,6 +102,8 @@ class DictionaryApiController extends Controller
         ];
         $response = json_encode($response);
         $this->getResponse()->setBody($response);
+        $this->getResponse()->addHeader("Access-Control-Allow-Methods", "POST");
+        $this->getResponse()->addHeader("Access-Control-Allow-Headers", "x-requested-with");
         return $this->getResponse();
     }
 }
