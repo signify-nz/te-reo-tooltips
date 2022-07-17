@@ -1,6 +1,5 @@
 .TeReoToolTip {
     border-bottom: 1px dashed rgba(0, 0, 0, 0.349);
-    // Will this break flow?
     display: inline-block;
 }
 
@@ -26,19 +25,8 @@
 }
 
 .DarkTheme.TeReoToolTip:before {
-    content: attr(data-originaltext);
-    position: absolute;
-    padding: 5px;
-    border-radius: 10px;
     background: rgba(58, 55, 55, .75);
     color: rgb(247, 244, 244);
-    text-align: center;
-    display: none;
-    transform: translateY(-30px);
-}
-
-.DarkTheme.TeReoToolTip:hover:before {
-    display: inline-block;
 }
 
 .CustomTheme.TeReoToolTip {
@@ -46,20 +34,8 @@
 }
 
 .CustomTheme.TeReoToolTip:before {
-    content: attr(data-originaltext);
-    position: absolute;
-    padding: 5px;
-    border-radius: 10px;
     background: var(---tooltip-customhexcode);
     color: rgba(27, 27, 27, 0.9);
-    text-align: center;
-    display: none;
-    transform: translateY(-30px);
-
-}
-
-.CustomTheme.TeReoToolTip:hover:before {
-    display: inline-block;
 }
 
 #Form_EditForm_DictionaryIDDarkTheme {

@@ -1,15 +1,9 @@
 <?php
 
-//namespace Signify\Translation\Models;
 namespace Signify\TeReoTooltips;
 
-use SilverStripe\Control\HTTPResponse;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\RequiredFields;
-use SilverStripe\Security\Member;
-use SilverStripe\Dev\Debug;
 
 class Dictionary extends DataObject
 {
@@ -20,15 +14,14 @@ class Dictionary extends DataObject
         'DestinationLanguage' => 'Varchar',
     ];
 
-    // Is this an appropriate naming convention?
-    private static $table_name = 'Signify/Dictionary_Object';
+    private static $table_name = 'Signify_Dictionary';
 
     private static $has_many = [
-        'WordPair' => WordPair::class,
+        'WordPairs' => WordPair::class,
     ];
 
     private static $owns = [
-        'WordPair'
+        'WordPairs'
     ];
 
     //Is this necessary?

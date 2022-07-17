@@ -6,13 +6,13 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\SiteConfig\SiteConfig;
 
+
 class DictionaryApiController extends Controller
 {
 
     private static $allowed_actions = [
         'index',
         'dictionaries',
-        'associatedWordPairs',
         'translateThroughInterface',
         'addWordPair',
         'translateByWord',
@@ -41,7 +41,7 @@ class DictionaryApiController extends Controller
         $ID = $request->param('ID');
         if (is_numeric($ID)) {
             $dict = Dictionary::get_by_id($ID);
-            $pairs = $dict->WordPair();
+            $pairs = $dict->WordPairs();
             $pairList = [];
             foreach ($pairs as $pair) {
                 array_push($pairList, [
@@ -54,7 +54,7 @@ class DictionaryApiController extends Controller
             $this->getResponse()->setBody($pairList);
         } else {
             $dict = SiteConfig::current_site_config()->getField('Dictionary');
-            $pairs = $dict->WordPair();
+            $pairs = $dict->WordPairs();
             $pairList = [];
             foreach ($pairs as $pair) {
                 array_push($pairList, [

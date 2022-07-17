@@ -24,7 +24,7 @@ class LocalService implements ServiceInterface
     public function translateWord($text, $languageID = null)
     {
         $dict = $this->checkLanguage($languageID);
-        $pairList = $dict->WordPair();
+        $pairList = $dict->WordPairs();
         foreach ($pairList as $pair) {
             if ($text == $pair->getField('Base')) {
                 return $pair->getField("Destination");
@@ -37,7 +37,7 @@ class LocalService implements ServiceInterface
     public function translateBody($text, $languageID = null)
     {
         $dict = $this->checkLanguage($languageID);
-        $pairs = $dict->WordPair();
+        $pairs = $dict->WordPairs();
         foreach ($pairs as $word) {
             //this replaces text with a shortcode, only if text is not immediately followed by [/TT] i.e. is already a shortcode. /g is implicit in preg_replace.
             //regex look behind not supported in some browsers. Target must be preceded and followed by a non-letter character, this is so that partial words are not selected 
@@ -55,7 +55,7 @@ class LocalService implements ServiceInterface
         $pair->Base = $Base;
         $pair->Destination = $Destination;
         $pair->write();
-        $dict->WordPair()->add($pair);
+        $dict->WordPairs()->add($pair);
         return $pair;
     }
 }

@@ -12,8 +12,7 @@ use SilverStripe\Forms\RequiredFields;
 class WordPair extends DataObject
 {
 
-    // Is this an appropriate naming convention?
-    private static $table_name = 'Signify/WordPair_Object';
+    private static $table_name = 'Signify_WordPair';
 
     private static $db = [
         'Base' => "HTMLVarchar",

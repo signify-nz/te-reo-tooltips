@@ -185,6 +185,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     // pass dictionary ID as argument to recieve that dictionary, pass 0 to get currently selected dictionary
     // These two functions could be consolidated into one
+    // Is this description still valid? functionality has been split into two functions getDictionary/ies()
     function getDictionary(ID) {
         const Http = new XMLHttpRequest();
         const url = '/api/v1/dictionary/dictionaries/' + ID;

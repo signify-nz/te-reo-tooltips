@@ -17,7 +17,7 @@ const PATHS = {
   SRC: Path.resolve('src'),
   DIST: Path.resolve('client/dist'),
   TEREOPLUGIN: Path.resolve('te_reo_plugin'),
-  CSS: Path.resolve('css'),
+  CSS: Path.resolve('client/src/scss'),
 };
 
 const externals = externalJS(ENV, PATHS);
