@@ -29,10 +29,10 @@ class SiteConfigExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldsToTab('Root.Dictionary', array(
-            $fieldGroup = FieldGroup::create(
+            FieldGroup::create(
                 DropdownField::create('DictionaryID', 'Active Dictionary')
                     ->setSource(Dictionary::get()->map('ID', 'Title')),
-                CheckBoxField::create('DarkTheme', 'Tooltip dark theme'),
+                CheckboxField::create('DarkTheme', 'Tooltip dark theme'),
             ),
             $grid = GridField::create('name', 'Current dictionaries', Dictionary::get()),
         ));
@@ -40,7 +40,7 @@ class SiteConfigExtension extends DataExtension
         $grid->setConfig($gridConfig);
 
         //This requirement is added so that styling is applied to the cms page
-        Requirements::css('vendor/signify-nz/te_reo_tooltips/client/dist/styles/main.css');
+        Requirements::css('signify-nz/te_reo_tooltips:client/dist/styles/main.css');
         return $fields;
     }
 }
