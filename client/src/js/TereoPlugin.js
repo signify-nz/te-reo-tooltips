@@ -186,14 +186,14 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // pass dictionary ID as argument to recieve that dictionary, pass 0 to get currently selected dictionary
     // These two functions could be consolidated into one
     // Is this description still valid? functionality has been split into two functions getDictionary/ies()
-    function getDictionary(ID) {
-        const Http = new XMLHttpRequest();
-        const url = '/api/v1/dictionary/dictionaries/' + ID;
-        Http.open("GET", url);
-        Http.send();
-        Http.onreadystatechange = function () {
+    function getDictionary(id) {
+        const request = new XMLHttpRequest();
+        const url = '/api/v1/dictionary/dictionaries/' + id;
+        request.open("GET", url);
+        request.send();
+        request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var response = Http.responseText;
+                var response = request.responseText;
                 response = JSON.parse(response);
                 console.log("Building local dictionary:");
                 for (let i = 0; i < response.length; i++) {
@@ -205,13 +205,13 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     };
 
     function getDictionaries() {
-        const Http = new XMLHttpRequest();
+        const request = new XMLHttpRequest();
         const url = '/api/v1/dictionary/index/';
-        Http.open("GET", url);
-        Http.send();
-        Http.onreadystatechange = function () {
+        request.open("GET", url);
+        request.send();
+        request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var response = Http.responseText;
+                var response = request.responseText;
                 response = JSON.parse(response);
                 console.log("Building library:");
                 for (let i = 0; i < response.length; i++) {
@@ -284,17 +284,19 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // this has a hasty bug fix, this code runs before the dictionarymap is populated, so the shortcodes are not replaced on page load. the last 'if else' addresses this
     function replaceShortcodes(content) {
         console.log('replaceShortcodes');
+        let startOffset = 4;
+        let endOffset = 5;
         // preceded by '[TT]', anything between, followed by '[/TT]'
         return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
-            if (dictionaryMap.has(match.slice(4, match.length - 5))) {
-                console.log("found = '" + match + "', replaced with span " + match.slice(4, match.length - 5) + " span");
-                return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>&#8203';
+            if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
+                console.log("found = '" + match + "', replaced with span " + match.slice(startOffset, match.length - endOffset) + " span");
+                return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(startOffset, match.length - endOffset) + '</span>&#8203';
             } else {
                 if (dictionaryMap.size == 0) {
                     console.log("empty dictionary, you should only see this on init");
-                    return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(4, match.length - 5) + '</span>&#8203'
+                    return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(startOffset, match.length - endOffset) + '</span>&#8203'
                 } else {
-                    return match.slice(4, match.length - 5);
+                    return match.slice(startOffset, match.length - endOffset);
                 }
             }
         });

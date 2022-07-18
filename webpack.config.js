@@ -16,7 +16,7 @@ const PATHS = {
   ROOT: Path.resolve(),
   SRC: Path.resolve('src'),
   DIST: Path.resolve('client/dist'),
-  TEREOPLUGIN: Path.resolve('te_reo_plugin'),
+  JS: Path.resolve('client/src/js/'),
   CSS: Path.resolve('client/src/scss'),
 };
 
@@ -27,7 +27,7 @@ const config = [
   {
     name: 'js',
     entry: {
-      bundle: `${PATHS.TEREOPLUGIN}/TeReoPlugin.js`,
+      bundle: `${PATHS.JS}/TeReoPlugin.js`,
     },
     output: {
       path: PATHS.DIST,
