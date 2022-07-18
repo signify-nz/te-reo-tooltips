@@ -10,7 +10,7 @@ class LocalService implements ServiceInterface
 
     // Helper function
     // If no language is provided, get default.
-    public function checkLanguage($language)
+    private function checkLanguage($language)
     {
         if ($language !== null) {
             if (Dictionary::get_by_id($language)) {
@@ -26,7 +26,7 @@ class LocalService implements ServiceInterface
         $dict = $this->checkLanguage($languageID);
         $pairList = $dict->WordPairs();
         foreach ($pairList as $pair) {
-            if ($text == $pair->getField('Base')) {
+            if ($text === $pair->getField('Base')) {
                 return $pair->getField("Destination");
             }
         }
@@ -47,7 +47,7 @@ class LocalService implements ServiceInterface
         return $text;
     }
 
-    function addWordPair($Base, $Destination, $ID = null)
+    public function addWordPair($Base, $Destination, $ID = null)
     {
         // Input validation occurs at javascript level
         $dict = $this->checkLanguage($ID);
