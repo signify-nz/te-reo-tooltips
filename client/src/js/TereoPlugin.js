@@ -1,9 +1,9 @@
 tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     // Likely need to 'escape' regex function, possible security issue with user input. https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
-    var dictionaryMap = new Map();
-    var library = [];
-    var bookmark;
+    let dictionaryMap = new Map();
+    let library = [];
+    let bookmark;
 
     editor.addButton('translate', {
         image: '/_resources/vendor/signify-nz/te_reo_tooltips/client/dist/img/globe-light.svg',
@@ -20,7 +20,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     editor.addMenuItem('contextTranslate', {
         text: 'Translate',
         onclick: function () {
-            console.log("Selection content = " + editor.selection.getContent({ format: 'html' }));
             bookmark = tinymce.activeEditor.selection.getBookmark(2, true);
             //Passing the selection argument here seems unneccesary
             treeWalk(editor.selection.getRng(), editor.selection.getSel());
@@ -31,7 +30,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             // execCommand 'insertHTML' as an alternative method? If dom traversal is messy
 
             //This is the previous method that used the API, issues around tinymce get/set caused this to be dropped in favour of treeWalk()
-            // var translation = translateSelectionThroughAPI(editor.selection.getContent({format: 'html'}));
+            // let translation = translateSelectionThroughAPI(editor.selection.getContent({format: 'html'}));
             // editor.selection.setContent(translation);
         }
     });
@@ -39,33 +38,32 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // The value of this function over something more simple (i.e. getContent, modify, setContent) is that it circumvents tinymce's cleanup functionality 
     // which will insert HTML tags when modifying a selection
     function treeWalk(rng, sel) {
-        var startNode = editor.selection.getNode();
-        var walker = new tinymce.dom.TreeWalker(startNode);
-        var found = false;
-        var finished = false;
-        var garbage;
-        console.log("treewalk begins here");
+        let startNode = editor.selection.getNode();
+        let walker = new tinymce.dom.TreeWalker(startNode);
+        let found = false;
+        let finished = false;
+        let garbage;
         do {
             if (garbage) {
                 garbage.remove();
                 garbage = null;
             }
-            var currentNode = walker.current();
+            let currentNode = walker.current();
             if (currentNode.isEqualNode(rng.startContainer) && currentNode.isEqualNode(rng.endContainer) && currentNode.nodeType == 3) {
                 found = false;
-                var result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset)) + checkForMatches(editor.selection.getContent(), false) + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
+                let result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset)) + checkForMatches(editor.selection.getContent(), false) + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
                 garbage = addHtmlToTextNode(currentNode, result);
             } else if (currentNode.nodeType == 3) {
                 if (currentNode.isEqualNode(rng.endContainer)) {
-                    var result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false) + currentNode.nodeValue.substr(rng.endOffset);
+                    let result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false) + currentNode.nodeValue.substr(rng.endOffset);
                     garbage = addHtmlToTextNode(currentNode, result);
                     found = false;
                     finished = true;
                 } else if (found) {
-                    var result = checkForMatches(currentNode.nodeValue, false);
+                    let result = checkForMatches(currentNode.nodeValue, false);
                     garbage = addHtmlToTextNode(currentNode, result);
                 } else if (currentNode.isEqualNode(rng.startContainer)) {
-                    var result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
+                    let result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
                     garbage = addHtmlToTextNode(currentNode, result);
                     found = true;
                 }
@@ -79,7 +77,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     //credit: https://stackoverflow.com/questions/16662393/insert-html-into-text-node-with-javascript
     function addHtmlToTextNode(textNode, innerHTML) {
-        var span = document.createElement('span');
+        let span = document.createElement('span');
         textNode.parentNode.insertBefore(span, textNode);
         span.insertAdjacentHTML('beforebegin', innerHTML);
         span.remove();
@@ -99,7 +97,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     editor.addMenuItem('addToDictionary', {
         text: 'Add to Dictionary',
         onclick: function () {
-            var selection = editor.selection.getContent({ format: 'text' });
+            let selection = editor.selection.getContent({ format: 'text' });
             addToDictMenu(selection);
         }
     });
@@ -140,7 +138,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
                 {
                     text: "Add", subtype: 'primary', onclick: function () {
                         //This is likely messier than it needs to be. can it handle special characters? is there any conversion?
-                        var selectedID = library.find(o => o.text == document.getElementById('DictionaryDisplayComboBox-inp').value).id;
+                        let selectedID = library.find(o => o.text == document.getElementById('DictionaryDisplayComboBox-inp').value).id;
                         newWordPair(document.getElementById('BaseInputTextBox').value, document.getElementById('DestinationInputTextBox').value, selectedID);
                     }
                 },
@@ -193,12 +191,10 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         request.send();
         request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var response = request.responseText;
+                let response = request.responseText;
                 response = JSON.parse(response);
-                console.log("Building local dictionary:");
                 for (let i = 0; i < response.length; i++) {
                     dictionaryMap.set(response[i]['Base'], response[i]['Destination']);
-                    console.log("key = " + response[i]['Base'] + ", value = " + response[i]['Destination']);
                 }
             }
         }
@@ -211,20 +207,18 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         request.send();
         request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var response = request.responseText;
+                let response = request.responseText;
                 response = JSON.parse(response);
-                console.log("Building library:");
                 for (let i = 0; i < response.length; i++) {
                     library.push({ text: response[i]['Title'], value: response[i]['Title'], id: response[i]['ID'] });
-                    console.log("added dictionary = " + response[i]['Title']);
                 }
             }
         }
     };
 
     function checkForMatches(content, shortcode = true) {
-        var openTag = '';
-        var closeTag = '';
+        let openTag = '';
+        let closeTag = '';
         if (!content) {
             return content;
         }
@@ -256,13 +250,11 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
 
     // Before content is set in the editor, the shortcodes are replaced with a simple span tag to style and delineate translations
     editor.on('BeforeSetcontent', function (event) {
-        console.log('BeforeSetcontent');
         event.content = replaceShortcodes(event.content);
     });
 
     //When content is retrieved from the editor, the span tag is removed and the shortcodes are restored
     editor.on('GetContent', function (event) {
-        console.log('GetContent');
         event.content = restoreShortcodes(event.content);
     });
 
@@ -273,7 +265,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             if (dictionaryMap.has(match.slice(63, match.length - 7))) {
                 restoration = '[TT]' + match.slice(63, match.length - 7) + '[/TT]';
             } else {
-                console.log("Does not match a dictionary, looking deeper");
                 restoration = checkForMatches(match.slice(63, match.length - 7));
             }
             return restoration;
@@ -283,17 +274,14 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // adding a zero width space on the end means that text written after a translation will not be in the span
     // this has a hasty bug fix, this code runs before the dictionarymap is populated, so the shortcodes are not replaced on page load. the last 'if else' addresses this
     function replaceShortcodes(content) {
-        console.log('replaceShortcodes');
         let startOffset = 4;
         let endOffset = 5;
         // preceded by '[TT]', anything between, followed by '[/TT]'
         return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
             if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-                console.log("found = '" + match + "', replaced with span " + match.slice(startOffset, match.length - endOffset) + " span");
                 return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(startOffset, match.length - endOffset) + '</span>&#8203';
             } else {
                 if (dictionaryMap.size == 0) {
-                    console.log("empty dictionary, you should only see this on init");
                     return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(startOffset, match.length - endOffset) + '</span>&#8203'
                 } else {
                     return match.slice(startOffset, match.length - endOffset);
