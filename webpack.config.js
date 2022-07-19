@@ -16,7 +16,7 @@ const PATHS = {
   ROOT: Path.resolve(),
   SRC: Path.resolve('src'),
   DIST: Path.resolve('client/dist'),
-  JS: Path.resolve('client/src/js/'),
+  JS: Path.resolve('client/src/js'),
   CSS: Path.resolve('client/src/scss'),
 };
 
