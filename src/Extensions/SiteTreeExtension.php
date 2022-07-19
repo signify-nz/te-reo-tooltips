@@ -9,7 +9,6 @@ use SilverStripe\View\Requirements;
 
 class SiteTreeExtension extends Extension
 {
-
     use Configurable;
 
     /**

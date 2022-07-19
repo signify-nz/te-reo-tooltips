@@ -11,11 +11,8 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\View\Requirements;
 use Signify\TeReoTooltips\Models\Dictionary;
 
-use SilverStripe\Dev\Debug;
-
 class SiteConfigExtension extends DataExtension
 {
-
     private static $has_one = [
         'Dictionary' => Dictionary::class,
     ];

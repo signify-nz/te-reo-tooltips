@@ -9,7 +9,6 @@ use Signify\TeReoTooltips\Models\Dictionary;
 
 class LocalService implements ServiceInterface
 {
-
     // Helper function
     // If no language is provided, get default.
     private function checkLanguage($language)
@@ -41,8 +40,10 @@ class LocalService implements ServiceInterface
         $dict = $this->checkLanguage($languageID);
         $pairs = $dict->WordPairs();
         foreach ($pairs as $word) {
-            //this replaces text with a shortcode, only if text is not immediately followed by [/TT] i.e. is already a shortcode. /g is implicit in preg_replace.
-            //regex look behind not supported in some browsers. Target must be preceded and followed by a non-letter character, this is so that partial words are not selected 
+            // This replaces text with a shortcode, only if text is not immediately followed by [/TT] i.e. is already a shortcode.
+            // Target must be preceded and followed by a non-letter character, this is so that partial words are not selected
+            // /g is implicit in preg_replace.
+            // regex look behind not supported in some browsers.
             $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])/';
             $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
         }

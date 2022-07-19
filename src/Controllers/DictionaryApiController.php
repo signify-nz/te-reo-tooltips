@@ -10,7 +10,6 @@ use Signify\TeReoTooltips\Models\Dictionary;
 
 class DictionaryApiController extends Controller
 {
-
     private static $allowed_actions = [
         'index',
         'dictionaries',
