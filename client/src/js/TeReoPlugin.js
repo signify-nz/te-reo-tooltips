@@ -35,7 +35,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         }
     });
 
-    // The value of this function over something more simple (i.e. getContent, modify, setContent) is that it circumvents tinymce's cleanup functionality 
+    // The value of this function over something more simple (i.e. getContent, modify, setContent) is that it circumvents tinymce's cleanup functionality
     // which will insert HTML tags when modifying a selection
     function treeWalk(rng, sel) {
         let startNode = editor.selection.getNode();
@@ -51,11 +51,14 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             let currentNode = walker.current();
             if (currentNode.isEqualNode(rng.startContainer) && currentNode.isEqualNode(rng.endContainer) && currentNode.nodeType == 3) {
                 found = false;
-                let result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset)) + checkForMatches(editor.selection.getContent(), false) + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
+                let result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset))
+                    + checkForMatches(editor.selection.getContent(), false)
+                    + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
                 garbage = addHtmlToTextNode(currentNode, result);
             } else if (currentNode.nodeType == 3) {
                 if (currentNode.isEqualNode(rng.endContainer)) {
-                    let result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false) + currentNode.nodeValue.substr(rng.endOffset);
+                    let result = checkForMatches(currentNode.nodeValue.substr(0, rng.endOffset), false)
+                        + currentNode.nodeValue.substr(rng.endOffset);
                     garbage = addHtmlToTextNode(currentNode, result);
                     found = false;
                     finished = true;
@@ -63,7 +66,8 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
                     let result = checkForMatches(currentNode.nodeValue, false);
                     garbage = addHtmlToTextNode(currentNode, result);
                 } else if (currentNode.isEqualNode(rng.startContainer)) {
-                    let result = currentNode.nodeValue.substr(0, rng.startOffset) + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
+                    let result = currentNode.nodeValue.substr(0, rng.startOffset)
+                        + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
                     garbage = addHtmlToTextNode(currentNode, result);
                     found = true;
                 }
@@ -109,11 +113,11 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             tinymce.activeEditor.windowManager.alert("This word already has a translation! (" + dictionaryMap.get(base) + ")");
         } else {
             tinyMCE.activeEditor.windowManager.close();
-            const Http = new XMLHttpRequest();
+            const request = new XMLHttpRequest();
             const url = '/api/v1/dictionary/addWordPair/' + id + "?base=" + base + "&destination=" + destination;
-            Http.open("POST", url);
-            Http.send();
-            Http.onreadystatechange = function () {
+            request.open("POST", url);
+            request.send();
+            request.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     dictionaryMap.set(base, destination);
                 }
@@ -130,7 +134,6 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
             align: "center",
             onClose: function () {
                 editor.focus();
-                // self.done();
             },
             onSubmit: function () {
             },
@@ -181,7 +184,7 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
         Http.send(textContent);
     };
 
-    // pass dictionary ID as argument to recieve that dictionary, pass 0 to get currently selected dictionary
+    // pass dictionary ID as argument to receive that dictionary, pass 0 to get currently selected dictionary
     // These two functions could be consolidated into one
     // Is this description still valid? functionality has been split into two functions getDictionary/ies()
     function getDictionary(id) {
@@ -274,15 +277,17 @@ tinymce.PluginManager.add('TeReoPlugin', function (editor, url) {
     // adding a zero width space on the end means that text written after a translation will not be in the span
     // this has a hasty bug fix, this code runs before the dictionarymap is populated, so the shortcodes are not replaced on page load. the last 'if else' addresses this
     function replaceShortcodes(content) {
-        let startOffset = 4;
-        let endOffset = 5;
+        const startOffset = 4;
+        const endOffset = 5;
+        const openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline;">';
+        const closeTag = '</span>&#8203';
         // preceded by '[TT]', anything between, followed by '[/TT]'
         return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, function (match) {
             if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-                return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(startOffset, match.length - endOffset) + '</span>&#8203';
+                return openTag + match.slice(startOffset, match.length - endOffset) + closeTag;
             } else {
                 if (dictionaryMap.size == 0) {
-                    return '<span class=\"TeReoTooltip\" style="text-decoration: underline;">' + match.slice(startOffset, match.length - endOffset) + '</span>&#8203'
+                    return openTag + match.slice(startOffset, match.length - endOffset) + closeTag
                 } else {
                     return match.slice(startOffset, match.length - endOffset);
                 }
