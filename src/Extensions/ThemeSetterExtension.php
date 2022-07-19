@@ -1,6 +1,5 @@
 <?php
-
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Extensions;
 
 use SilverStripe\Core\Extension;
 use SilverStripe\View\Requirements;

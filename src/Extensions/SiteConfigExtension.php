@@ -1,6 +1,5 @@
 <?php
-
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Extensions;
 
 use SilverStripe\Forms\CheckBoxField;
 use SilverStripe\ORM\DataExtension;
@@ -10,6 +9,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\View\Requirements;
+use Signify\TeReoTooltips\Models\Dictionary;
 
 use SilverStripe\Dev\Debug;
 

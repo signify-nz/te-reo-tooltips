@@ -1,6 +1,6 @@
 <?php
 
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Models;
 
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataObject;

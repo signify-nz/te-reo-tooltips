@@ -1,9 +1,11 @@
 <?php
 
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Services;
 
 use Exception;
 use SilverStripe\SiteConfig\SiteConfig;
+use Signify\TeReoTooltips\Models\WordPair;
+use Signify\TeReoTooltips\Models\Dictionary;
 
 class LocalService implements ServiceInterface
 {

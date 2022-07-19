@@ -18,9 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverStripeModule\\Skeleton\\": "src/",
-            "SilverStripeModule\\Skeleton\\Tests\\": "tests/",
-            "Signify\\TeReoTooltips\\": "src/Extensions"
+            "Signify\\TeReoTooltips\\": "src/"
         }
     },
     "extra": {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Services;
 
 interface ServiceInterface
 {

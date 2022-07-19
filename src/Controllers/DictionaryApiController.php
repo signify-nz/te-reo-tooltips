@@ -1,11 +1,12 @@
 <?php
 
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Controllers;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Injector\Injector;
+use Signify\TeReoTooltips\Models\Dictionary;
 
 class DictionaryApiController extends Controller
 {
@@ -79,7 +80,7 @@ class DictionaryApiController extends Controller
 
     public function translateThroughInterface(HTTPRequest $request)
     {
-        $service = Injector::inst()->create('LocalService');
+        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalService');
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
         $this->getResponse()->setBody($translation);
@@ -93,7 +94,7 @@ class DictionaryApiController extends Controller
         $id = $request->param('ID');
         $base = $request->getVar('base');
         $destination = $request->getVar('destination');
-        $service = new LocalService;
+        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalService');
         $newPair = $service->addWordPair($base, $destination, $id);
         $response = [
             'ID' => $newPair->ID,
