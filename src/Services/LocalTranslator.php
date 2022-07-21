@@ -17,13 +17,19 @@ class LocalTranslator implements TranslatorInterface
                 return Dictionary::get_by_id($language);
             }
         }
-        return SiteConfig::current_site_config()->getField('Dictionary');
+        if (SiteConfig::current_site_config()->getField('ActiveDictionary')){
+            return SiteConfig::current_site_config()->getField('ActiveDictionary');
+        }
+        return null;
     }
 
     //search for an exact match on a string
     public function translateWord($text, $languageID = null)
     {
         $dict = $this->checkLanguage($languageID);
+        if (!$dict){
+            return null;
+        }
         $pairList = $dict->WordPairs();
         foreach ($pairList as $pair) {
             if ($text === $pair->getField('Base')) {
@@ -37,6 +43,9 @@ class LocalTranslator implements TranslatorInterface
     public function translateBody($text, $languageID = null)
     {
         $dict = $this->checkLanguage($languageID);
+        if (!$dict){
+            return $text;
+        }
         $pairs = $dict->WordPairs();
         foreach ($pairs as $word) {
             // This replaces text with a shortcode, only if text is not immediately followed by [/TT] i.e. is already a shortcode.

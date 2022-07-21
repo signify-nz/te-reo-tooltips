@@ -69,7 +69,7 @@ class DictionaryApiController extends Controller
             $pairList = json_encode($pairList);
             $this->getResponse()->setBody($pairList);
         } else {
-            $dict = SiteConfig::current_site_config()->getField('Dictionary');
+            $dict = SiteConfig::current_site_config()->getField('ActiveDictionary');
             $pairs = $dict->WordPairs();
             $pairList = [];
             foreach ($pairs as $pair) {
@@ -115,6 +115,10 @@ class DictionaryApiController extends Controller
         $destination = $request->getVar('destination');
         $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalUpdater');
         $newPair = $service->addWordPair($base, $destination, $id);
+        if (!$newPair){
+            $this->setResponse(new HTTPResponse("Unable to process this request. No dictionary exists to hold this wordpair.", 400));
+            return $this->getResponse();
+        }
         $response = [
             'ID' => $newPair->ID,
             'Base' => $newPair->Base,

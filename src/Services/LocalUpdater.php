@@ -17,13 +17,19 @@ class LocalUpdater implements UpdaterInterface
                 return Dictionary::get_by_id($language);
             }
         }
-        return SiteConfig::current_site_config()->getField('Dictionary');
+        if (SiteConfig::current_site_config()->getField('ActiveDictionary')){
+            return SiteConfig::current_site_config()->getField('ActiveDictionary');
+        }
+        return null;
     }
 
     public function addWordPair($Base, $Destination, $ID = null)
     {
         // Input validation occurs at javascript level
         $dict = $this->checkLanguage($ID);
+        if (!$dict){
+            return null;
+        }
         $pair = new WordPair();
         $pair->Base = $Base;
         $pair->Destination = $Destination;

@@ -4,6 +4,7 @@ namespace Signify\TeReoTooltips\Models;
 
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\RequiredFields;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class Dictionary extends DataObject
 {
@@ -24,9 +25,8 @@ class Dictionary extends DataObject
         'WordPairs'
     ];
 
-    //Is this necessary?
-    private static $belongs_to = [
-        'SiteConfig' => SiteConfigExtension::class,
+    private static $has_one = [
+        'SiteConfig' => SiteConfig::class,
     ];
 
     private static $summary_fields = [

@@ -13,8 +13,12 @@ use Signify\TeReoTooltips\Models\Dictionary;
 
 class SiteConfigExtension extends DataExtension
 {
+    private static $has_many = [
+        'Dictionaries' => Dictionary::class,
+    ];
+
     private static $has_one = [
-        'Dictionary' => Dictionary::class,
+        'ActiveDictionary' => Dictionary::class,
     ];
 
     private static $api_access = true;
@@ -27,11 +31,11 @@ class SiteConfigExtension extends DataExtension
     {
         $fields->addFieldsToTab('Root.Dictionary', array(
             FieldGroup::create(
-                DropdownField::create('DictionaryID', 'Active Dictionary')
-                    ->setSource(Dictionary::get()->map('ID', 'Title')),
+                DropdownField::create('ActiveDictionaryID', 'Active Dictionary')
+                    ->setSource($this->owner->Dictionaries()->map('ID', 'Title')),
                 CheckboxField::create('DarkTheme', 'Tooltip dark theme'),
             ),
-            $grid = GridField::create('name', 'Current dictionaries', Dictionary::get()),
+            $grid = GridField::create('Dictionaries', 'Current dictionaries', $this->owner->Dictionaries()),
         ));
         $gridConfig = GridFieldConfig_RecordEditor::create();
         $grid->setConfig($gridConfig);
