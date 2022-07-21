@@ -1,5 +1,6 @@
 /* global tinymce */
-tinymce.PluginManager.add('TeReoPlugin', (editor) => {
+// eslint-disable-next-line no-unused-vars
+tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   // Likely need to 'escape' regex function, possible security issue with user input. https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
   const dictionaryMap = new Map();
   const library = [];
