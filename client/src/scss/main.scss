@@ -20,20 +20,20 @@
     display: inline-block;
 }
 
-.DarkTheme.TeReoToolTip {
+.TeReoToolTip.TeReoToolTip--Dark-Theme {
     border-bottom: 1px dashed rgb(255, 255, 255);
 }
 
-.DarkTheme.TeReoToolTip:before {
+.TeReoToolTip.TeReoToolTip--Dark-Theme:before {
     background: rgba(58, 55, 55, .75);
     color: rgb(247, 244, 244);
 }
 
-.CustomTheme.TeReoToolTip {
+.TeReoToolTip.TeReoToolTip--Custom-Theme {
     border-bottom: 1px dashed rgba(0, 0, 0, 0.349);
 }
 
-.CustomTheme.TeReoToolTip:before {
+.TeReoToolTip.TeReoToolTip--Custom-Theme:before {
     background: var(---tooltip-customhexcode);
     color: rgba(27, 27, 27, 0.9);
 }
