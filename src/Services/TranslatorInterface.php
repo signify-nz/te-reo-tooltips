@@ -2,7 +2,7 @@
 
 namespace Signify\TeReoTooltips\Services;
 
-interface ServiceInterface
+interface TranslatorInterface
 {
     public function translateWord($text, $languageID);
     //take input word
@@ -11,7 +11,4 @@ interface ServiceInterface
 
     public function translateBody($text, $languageID);
     //same as above but takes a body of text
-
-    public function addWordPair($base, $destination, $ID);
-    //create a new wordPair object
 }

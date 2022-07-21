@@ -10,7 +10,7 @@ class ShortcodeHandler
 {
   public static function parseShortcodes($arguments, $content = null, $parser = null, $tagName = null)
     {
-        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalService');
+        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalTranslator');
         return ArrayData::create([
             'Content' => $content,
             'Translation' => $service->translateWord($content),

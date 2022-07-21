@@ -96,7 +96,7 @@ class DictionaryApiController extends Controller
         if(!$this->authorisedUser()){
             return $this->getResponse();
         };
-        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalService');
+        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalTranslator');
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
         $this->getResponse()->setBody($translation);
@@ -113,7 +113,7 @@ class DictionaryApiController extends Controller
         $id = $request->param('ID');
         $base = $request->getVar('base');
         $destination = $request->getVar('destination');
-        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalService');
+        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalUpdater');
         $newPair = $service->addWordPair($base, $destination, $id);
         $response = [
             'ID' => $newPair->ID,

@@ -4,10 +4,9 @@ namespace Signify\TeReoTooltips\Services;
 
 use Exception;
 use SilverStripe\SiteConfig\SiteConfig;
-use Signify\TeReoTooltips\Models\WordPair;
 use Signify\TeReoTooltips\Models\Dictionary;
 
-class LocalService implements ServiceInterface
+class LocalTranslator implements TranslatorInterface
 {
     // Helper function
     // If no language is provided, get default.
@@ -48,17 +47,5 @@ class LocalService implements ServiceInterface
             $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
         }
         return $text;
-    }
-
-    public function addWordPair($Base, $Destination, $ID = null)
-    {
-        // Input validation occurs at javascript level
-        $dict = $this->checkLanguage($ID);
-        $pair = new WordPair();
-        $pair->Base = $Base;
-        $pair->Destination = $Destination;
-        $pair->write();
-        $dict->WordPairs()->add($pair);
-        return $pair;
     }
 }
