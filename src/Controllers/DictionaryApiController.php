@@ -4,9 +4,12 @@ namespace Signify\TeReoTooltips\Controllers;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Injector\Injector;
 use Signify\TeReoTooltips\Models\Dictionary;
+use SilverStripe\Control\Director;
+use SilverStripe\Security\Security;
 
 class DictionaryApiController extends Controller
 {
@@ -17,8 +20,19 @@ class DictionaryApiController extends Controller
         'addWordPair',
     ];
 
+    private function authorisedUser(){
+        if( !Security::getCurrentUser() ) {
+            $this->setResponse(new HTTPResponse("You must be logged in to use this feature.", 401));
+            return false;
+        }
+        return true;
+    }
+
     public function index(HTTPRequest $request)
     {
+        if(!$this->authorisedUser()){
+            return $this->getResponse();
+        };
         $dictionaries = Dictionary::get();
         $dictionaryList = [];
 
@@ -37,6 +51,9 @@ class DictionaryApiController extends Controller
 
     public function dictionaries(HTTPRequest $request)
     {
+        if(!$this->authorisedUser()){
+            return $this->getResponse();
+        };
         $ID = $request->param('ID');
         if (is_numeric($ID)) {
             $dict = Dictionary::get_by_id($ID);
@@ -67,10 +84,7 @@ class DictionaryApiController extends Controller
         };
 
         $this->getResponse()->addHeader("Content-type", "application/json");
-        $this->getResponse()->addHeader(
-            'Access-Control-Allow-Origin',
-            "*"
-        );
+        $this->getResponse()->addHeader("Access-Control-Allow-Origin", Director::absoluteBaseURL());
         $this->getResponse()->addHeader("Access-Control-Allow-Methods", "GET");
         $this->getResponse()->addHeader("Access-Control-Allow-Headers", "x-requested-with");
 
@@ -79,6 +93,9 @@ class DictionaryApiController extends Controller
 
     public function translateThroughInterface(HTTPRequest $request)
     {
+        if(!$this->authorisedUser()){
+            return $this->getResponse();
+        };
         $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalService');
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
@@ -90,6 +107,9 @@ class DictionaryApiController extends Controller
 
     public function addWordPair(HTTPRequest $request)
     {
+        if(!$this->authorisedUser()){
+            return $this->getResponse();
+        };
         $id = $request->param('ID');
         $base = $request->getVar('base');
         $destination = $request->getVar('destination');
