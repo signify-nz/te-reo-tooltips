@@ -216,13 +216,19 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     });
   }
 
-  // Before content is set in the editor, the shortcodes are replaced with a
-  // simple span tag to style and delineate translations
-  editor.on('BeforeSetcontent', (event) => replaceShortcodes(event.content));
+  // Before content is set in the editor, the shortcodes are
+  // replaced with a simple span tag to style and delineate translations
+  editor.on('BeforeSetcontent', (event) => {
+    // eslint-disable-next-line no-param-reassign
+    event.content = replaceShortcodes(event.content);
+  });
 
-  // When content is retrieved from the editor, the span tag is removed
-  // and the shortcodes are restored
-  editor.on('GetContent', (event) => restoreShortcodes(event.content));
+  // When content is retrieved from the editor, the span tag
+  // is removed and the shortcodes are restored
+  editor.on('GetContent', (event) => {
+    // eslint-disable-next-line no-param-reassign
+    event.content = restoreShortcodes(event.content);
+  });
 
   // Credit to the searchReplace plugin for how to do this
   function addToDictMenu(selection) {
