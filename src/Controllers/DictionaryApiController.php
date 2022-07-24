@@ -69,6 +69,7 @@ class DictionaryApiController extends Controller
             $pairList = json_encode($pairList);
             $this->getResponse()->setBody($pairList);
         } else {
+            //this needs to handle the event where no such dictionary exists
             $dict = SiteConfig::current_site_config()->getField('ActiveDictionary');
             $pairs = $dict->WordPairs();
             $pairList = [];

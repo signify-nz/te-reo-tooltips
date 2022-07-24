@@ -17,7 +17,7 @@ class LocalTranslator implements TranslatorInterface
                 return Dictionary::get_by_id($language);
             }
         }
-        if (SiteConfig::current_site_config()->getField('ActiveDictionary')){
+        if (SiteConfig::current_site_config()->getField('ActiveDictionary')->exists()){
             return SiteConfig::current_site_config()->getField('ActiveDictionary');
         }
         return null;
