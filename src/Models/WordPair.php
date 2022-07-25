@@ -67,6 +67,18 @@ class WordPair extends DataObject
         return $fields;
     }
 
+    public function validate()
+    {
+        $result = parent::validate();
+
+        if($this->Dictionary()->WordPairs()->filter([
+            'Base' => $this->Base
+        ])->exists()) {
+            $result->addError('This base word already exists!');
+        }
+        return $result;
+    }
+
     public function getCMSValidator()
     {
         return new RequiredFields(array('Base', 'Destination'));
