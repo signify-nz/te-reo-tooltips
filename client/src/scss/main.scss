@@ -6,13 +6,13 @@
 .TeReoToolTip:before {
     content: attr(data-originaltext);
     position: absolute;
-    padding: 5px;
+    padding: 0.25em;
     border-radius: 10px;
     background: rgba(218, 216, 216, 0.75);
     color: rgba(27, 27, 27, 0.9);
     text-align: center;
     display: none;
-    transform: translateY(-30px);
+    transform: translateY(-1.75em);
     white-space: nowrap;
 }
 
