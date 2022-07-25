@@ -11,6 +11,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\View\Requirements;
 use Signify\TeReoTooltips\Models\Dictionary;
 use SilverStripe\Forms\LabelField;
+use SilverStripe\Security\Permission;
 
 class SiteConfigExtension extends DataExtension
 {
@@ -45,6 +46,9 @@ class SiteConfigExtension extends DataExtension
             if (!$this->owner->ActiveDictionary()->exists()){
                 $this->owner->SetField('ActiveDictionary', $this->owner->Dictionaries()->first());
             };
+            if (!Permission::check('TOOLTIP_DICTIONARY_RIGHTS')) {
+                $fieldgroup->setDisabled(true);
+            }
         } else {
             $fieldgroup->insertBefore('DarkTheme',
                 LabelField::create('No dictionaries currently exist'));

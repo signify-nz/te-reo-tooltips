@@ -8,6 +8,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Security\Permission;
 
 class WordPair extends DataObject
 {
@@ -29,6 +30,26 @@ class WordPair extends DataObject
     ];
 
     private static $api_access = true;
+
+    public function canView($member = null)
+    {
+        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+    }
+
+    public function canEdit($member = null)
+    {
+        return Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member);
+    }
+
+    public function canDelete($member = null)
+    {
+        return Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member);
+    }
+
+    public function canCreate($member = null, $context = [])
+    {
+        return Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member);
+    }
 
     public function getCMSFields()
     {

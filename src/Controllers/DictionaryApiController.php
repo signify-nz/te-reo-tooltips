@@ -9,6 +9,7 @@ use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Injector\Injector;
 use Signify\TeReoTooltips\Models\Dictionary;
 use SilverStripe\Control\Director;
+use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
 
@@ -136,7 +137,10 @@ class DictionaryApiController extends Controller
         };
         if (!$request->isPOST()){
             return $this->httpError(400, "Access denied");
-        }
+        };
+        if (!Permission::check('TOOLTIP_WORDPAIR_RIGHTS')){
+            return $this->httpError(400, "Access denied");
+        };
         $body = json_decode($request->getBody(), true);
         $base = $body['baseWord'];
         $destination = $body['destinationWord'];

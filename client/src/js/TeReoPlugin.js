@@ -122,6 +122,10 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
           dictionaryMap.set(base, destination);
           tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
         }
+        if (this.readyState === 4 && this.status === 400) {
+          dictionaryMap.set(base, destination);
+          tinymce.activeEditor.windowManager.alert(this.response);
+        }
       };
     }
   }
@@ -319,6 +323,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       translateThroughAPI(editor.getContent());
       tinymce.activeEditor.fire('change');
     }
+    // onPostRender: handleActiveState
   });
 
   // repeated translations cause issues, fix by adding validation in checkForMatches?
