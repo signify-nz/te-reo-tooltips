@@ -97,6 +97,9 @@ class WordPair extends DataObject
         ])->exists()) {
             $result->addError('This base word already exists!');
         }
+        if (!ctype_alnum($this->Base)) {
+            $result->addError('A base word must be a single word containing only letters or numbers.');
+        }
         return $result;
     }
 

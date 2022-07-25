@@ -25,16 +25,21 @@ class LocalUpdater implements UpdaterInterface
 
     public function addWordPair($Base, $Destination, $ID = null)
     {
-        // Input validation occurs at javascript level
+        // some validation occurs at javascript level
+        // returning null will result in an error message displayed to user
         $dict = $this->checkLanguage($ID);
         if (!$dict || !$Base || !$Destination){
             return null;
         }
         $pair = new WordPair();
+        try {
         $pair->Base = $Base;
         $pair->Destination = $Destination;
         $pair->write();
         $dict->WordPairs()->add($pair);
+        } catch (\Throwable $th) {
+            return null;
+        }
         return $pair;
     }
 }
