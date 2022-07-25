@@ -107,9 +107,16 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     } else {
       tinymce.activeEditor.windowManager.close();
       const request = new XMLHttpRequest();
-      const path = `/api/v1/dictionary/addWordPair/${id}?base=${base}&destination=${destination}`;
+      const path = `/api/v1/dictionary/addWordPair/${id}`;
       request.open('POST', path);
-      request.send();
+      const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+      const token = tokenElement.getAttribute('value');
+      request.setRequestHeader('X-SecurityID', token);
+      const body = JSON.stringify({
+        baseWord: base,
+        destinationWord: destination
+      });
+      request.send(body);
       request.onreadystatechange = function handleUpdateResponse() {
         if (this.readyState === 4 && this.status === 200) {
           dictionaryMap.set(base, destination);
@@ -122,17 +129,20 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   // Post request can handle much larger quantities
   // Tested with 15000 word request with approx 1 sec delay
   function translateThroughAPI(textContent) {
-    const Http = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     const path = '/api/v1/dictionary/translateThroughInterface';
-    Http.open('POST', path, true);
-    Http.onreadystatechange = function handleTranslationResponse() {
+    request.open('POST', path, true);
+    const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+    const token = tokenElement.getAttribute('value');
+    request.setRequestHeader('X-SecurityID', token);
+    request.onreadystatechange = function handleTranslationResponse() {
       if (this.readyState === 4 && this.status === 200) {
-        editor.setContent(Http.responseText, { format: 'html' });
+        editor.setContent(request.responseText, { format: 'html' });
         editor.undoManager.add();
         tinymce.activeEditor.selection.moveToBookmark(bookmark);
       }
     };
-    Http.send(textContent);
+    request.send(textContent);
   }
 
   // pass dictionary ID as argument to receive that dictionary, pass 0 to get currently dictionary
@@ -140,6 +150,9 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const request = new XMLHttpRequest();
     const path = `/api/v1/dictionary/dictionaries/${id}`;
     request.open('GET', path);
+    const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+    const token = tokenElement.getAttribute('value');
+    request.setRequestHeader('X-SecurityID', token);
     request.send();
     request.onreadystatechange = function handleWordPairResponse() {
       if (this.readyState === 4 && this.status === 200) {
@@ -156,6 +169,9 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const request = new XMLHttpRequest();
     const path = '/api/v1/dictionary/index/';
     request.open('GET', path);
+    const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+    const token = tokenElement.getAttribute('value');
+    request.setRequestHeader('X-SecurityID', token);
     request.send();
     request.onreadystatechange = function handleDictionaryResponse() {
       if (this.readyState === 4 && this.status === 200) {
@@ -281,12 +297,17 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     });
   }
 
+  // function handleActiveState() {
+  //   const btn = this;
+  //   btn.disabled(library.length === 0);
+  // }
+
   editor.addMenuItem('addToDictionary', {
     text: 'Add to Dictionary',
     onclick() {
       const selection = editor.selection.getContent({ format: 'text' });
       addToDictMenu(selection);
-    }
+    },
   });
 
   editor.addButton('translate', {

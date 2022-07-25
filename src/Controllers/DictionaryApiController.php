@@ -10,6 +10,7 @@ use SilverStripe\Core\Injector\Injector;
 use Signify\TeReoTooltips\Models\Dictionary;
 use SilverStripe\Control\Director;
 use SilverStripe\Security\Security;
+use SilverStripe\Security\SecurityToken;
 
 class DictionaryApiController extends Controller
 {
@@ -30,9 +31,16 @@ class DictionaryApiController extends Controller
 
     public function index(HTTPRequest $request)
     {
+        if (!$request->isGET()){
+            return $this->httpError(400, "Access denied");
+        }
+        if(!SecurityToken::inst()->checkRequest($request)){
+            return $this->httpError(400, "Access denied");
+        };
         if(!$this->authorisedUser()){
             return $this->getResponse();
         };
+        // TODO this should reference the current site config and only get related dictionaries
         $dictionaries = Dictionary::get();
         $dictionaryList = [];
 
@@ -51,6 +59,12 @@ class DictionaryApiController extends Controller
 
     public function dictionaries(HTTPRequest $request)
     {
+        if (!$request->isGET()){
+            return $this->httpError(400, "Access denied");
+        }
+        if(!SecurityToken::inst()->checkRequest($request)){
+            return $this->httpError(400, "Access denied");
+        };
         if(!$this->authorisedUser()){
             return $this->getResponse();
         };
@@ -94,6 +108,12 @@ class DictionaryApiController extends Controller
 
     public function translateThroughInterface(HTTPRequest $request)
     {
+        if (!$request->isPOST()){
+            return $this->httpError(400, "Access denied");
+        }
+        if(!SecurityToken::inst()->checkRequest($request)){
+            return $this->httpError(400, "Access denied");
+        };
         if(!$this->authorisedUser()){
             return $this->getResponse();
         };
@@ -111,13 +131,20 @@ class DictionaryApiController extends Controller
         if(!$this->authorisedUser()){
             return $this->getResponse();
         };
+        if(!SecurityToken::inst()->checkRequest($request)){
+            return $this->httpError(400, "Access denied");
+        };
+        if (!$request->isPOST()){
+            return $this->httpError(400, "Access denied");
+        }
+        $body = json_decode($request->getBody(), true);
+        $base = $body['baseWord'];
+        $destination = $body['destinationWord'];
         $id = $request->param('ID');
-        $base = $request->getVar('base');
-        $destination = $request->getVar('destination');
         $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalUpdater');
         $newPair = $service->addWordPair($base, $destination, $id);
         if (!$newPair){
-            $this->setResponse(new HTTPResponse("Unable to process this request. No dictionary exists to hold this wordpair.", 400));
+            $this->setResponse(new HTTPResponse("Unable to process this request.", 400));
             return $this->getResponse();
         }
         $response = [

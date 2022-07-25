@@ -27,7 +27,7 @@ class LocalUpdater implements UpdaterInterface
     {
         // Input validation occurs at javascript level
         $dict = $this->checkLanguage($ID);
-        if (!$dict){
+        if (!$dict || !$Base || !$Destination){
             return null;
         }
         $pair = new WordPair();
