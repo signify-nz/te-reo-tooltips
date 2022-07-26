@@ -43,6 +43,7 @@ class SiteConfigExtension extends DataExtension
                     ->setSource($this->owner->Dictionaries()->map('ID', 'Title')));
             // This nested if statement is intended to ensure that if possible, an active dictionary is always selected
             // However, i'm not sure it is as comprehensive as I want. May require further changes
+            // use getField() rather than exists?
             if (!$this->owner->ActiveDictionary()->exists()){
                 $this->owner->SetField('ActiveDictionary', $this->owner->Dictionaries()->first());
             };

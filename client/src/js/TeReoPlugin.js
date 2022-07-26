@@ -201,6 +201,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
 
   // this slice method is not robust, maybe use a regex to find everything between
   // the first '>' and the second '<'
+  // Address zero width space duplication by having a second content.replace?
   function restoreShortcodes(content) {
     let restoration = null;
     const startOffset = 74;
@@ -223,14 +224,15 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const startOffset = 4;
     const endOffset = 5;
     const openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline 1px dashed;">';
-    const closeTag = '</span>&#8203';
+    const closeTag = '</span>';
+    const zeroWidthSpace = '&#8203';
     // preceded by '[TT]', anything between, followed by '[/TT]'
     return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, (match) => {
       if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-        return openTag + match.slice(startOffset, match.length - endOffset) + closeTag;
+        return openTag + match.slice(startOffset, match.length - endOffset) + closeTag + zeroWidthSpace;
       }
       if (dictionaryMap.size === 0) {
-        return openTag + match.slice(startOffset, match.length - endOffset) + closeTag;
+        return openTag + match.slice(startOffset, match.length - endOffset) + closeTag + zeroWidthSpace;
       }
       return match.slice(startOffset, match.length - endOffset);
     });
