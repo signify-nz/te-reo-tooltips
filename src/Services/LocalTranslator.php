@@ -8,13 +8,18 @@ use Signify\TeReoTooltips\Models\Dictionary;
 
 class LocalTranslator implements TranslatorInterface
 {
-    // Helper function
-    // If no language is provided, get default.
-    private function checkLanguage($language)
+    /**
+     * Retrieves a Dictionary object by ID, or the currently active dictionary if no ID is provided.
+     *
+     * @param  int $dictionaryID
+     * The ID of the Dictionary to be retrieved
+     * @return Dictionary
+     */
+    private function checkLanguage($dictionaryID = null)
     {
-        if ($language !== null) {
-            if (Dictionary::get_by_id($language)) {
-                return Dictionary::get_by_id($language);
+        if ($dictionaryID !== null) {
+            if (Dictionary::get_by_id($dictionaryID)) {
+                return Dictionary::get_by_id($dictionaryID);
             }
         }
         if (SiteConfig::current_site_config()->getField('ActiveDictionary')->exists()){
@@ -23,10 +28,22 @@ class LocalTranslator implements TranslatorInterface
         return null;
     }
 
-    //search for an exact match on a string
-    public function translateWord($text, $languageID = null)
+    /**
+     * Search for an exactly matching translation for a given string.
+     *
+     * Will search a given Dictionary object for a a WordPair with a matching Base word.
+     * Returns the complementary Destination word for the matching Base.
+     *
+     * @param  string $text
+     * The word to be matched against.
+     * @param  int $dictionaryID
+     * The ID of the Dictionary to be checked. Will check the currently active Dictionary if null is provided.
+     * @return string
+     * A successfully translated word. Returns null if no match is found.
+     */
+    public function translateWord($text, $dictionaryID = null)
     {
-        $dict = $this->checkLanguage($languageID);
+        $dict = $this->checkLanguage($dictionaryID);
         if (!$dict){
             return null;
         }
@@ -39,17 +56,28 @@ class LocalTranslator implements TranslatorInterface
         return null;
     }
 
-    //Search for any number of matches on larger body of text
-    public function translateBody($text, $languageID = null)
+    /**
+     * Search for any number of translatable words on larger body of text.
+     *
+     * Wraps matching words within shortcodes using regex, under the following conditions
+     *  -   Matched text is not immediately followed by [/TT] i.e. is already a shortcode.
+     *  -   Matched text is preceded and followed by a non-letter character, this is so that partial words are not selected
+     *
+     * @param  string $text
+     * The text to be searched for matches.
+     * @param  int $dictionaryID
+     * The ID of the Dictionary to be checked. Will check the currently active Dictionary if null is provided.
+     * @return string
+     * The original text provided, with matches wrapped in shortcodes.
+     */
+    public function translateBody($text, $dictionaryID = null)
     {
-        $dict = $this->checkLanguage($languageID);
+        $dict = $this->checkLanguage($dictionaryID);
         if (!$dict){
             return $text;
         }
         $pairs = $dict->WordPairs();
         foreach ($pairs as $word) {
-            // This replaces text with a shortcode, only if text is not immediately followed by [/TT] i.e. is already a shortcode.
-            // Target must be preceded and followed by a non-letter character, this is so that partial words are not selected
             // /g is implicit in preg_replace.
             // regex look behind not supported in some browsers.
             $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])/';

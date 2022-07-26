@@ -4,11 +4,27 @@ namespace Signify\TeReoTooltips\Services;
 
 interface TranslatorInterface
 {
+    /**
+     * Searches
+     *
+     * @param  string $text
+     * Singular word to be translated
+     * @param  mixed $languageID
+     * A reference to the language being queried.
+     * @return string
+     * A successfully translated word. Returns null if no match is found.
+     */
     public function translateWord($text, $languageID);
-    //take input word
-    //return translated word
-    //can specify language, otherwise use default
 
+    /**
+     * translateBody
+     *
+     * @param  string $text
+     * A body of text to be translated
+     * @param  mixed $languageID
+     * A reference to the language being queried.
+     * @return string
+     * Original text with translations inserted, if applicable.
+     */
     public function translateBody($text, $languageID);
-    //same as above but takes a body of text
 }

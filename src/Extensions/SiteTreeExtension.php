@@ -11,9 +11,6 @@ class SiteTreeExtension extends Extension
 {
     use Configurable;
 
-    /**
-     * @config
-     */
     private static $custom_hexcode = "";
 
     public function updateCMSFields(FieldList $fields)

@@ -22,6 +22,11 @@ class DictionaryApiController extends Controller
         'addWordPair',
     ];
 
+    /**
+     * Checks if a user is logged into the CMS
+     *
+     * @return boolean
+     */
     private function authorisedUser(){
         if( !Security::getCurrentUser() ) {
             $this->setResponse(new HTTPResponse("You must be logged in to use this feature.", 401));
@@ -30,6 +35,15 @@ class DictionaryApiController extends Controller
         return true;
     }
 
+    /**
+     * Retrieves a list of Dictionaries associated with the SiteConfig
+     *
+     * @param  HTTPRequest $request
+     * Required headers:
+     * - X-SecurityID
+     * @return HTTPResponse
+     * JSON formatted response
+     */
     public function index(HTTPRequest $request)
     {
         if (!$request->isGET()){
@@ -58,6 +72,18 @@ class DictionaryApiController extends Controller
         return $this->getResponse();
     }
 
+    /**
+     * Retrieves a specific Dictionary Object from SiteConfig
+     *
+     * If an ID parameter is provided the matching Dictionary will be queried and returned.
+     * If no ID is provided the current active Dictionary will be queried and returned.
+     *
+     * @param  HTTPRequest $request
+     * Required headers:
+     * - X-SecurityID
+     * @return HTTPResponse
+     * JSON formatted response
+     */
     public function dictionaries(HTTPRequest $request)
     {
         if (!$request->isGET()){
@@ -107,6 +133,14 @@ class DictionaryApiController extends Controller
         return $this->getResponse();
     }
 
+    /**
+     * Queries a translation service and returns text with shortcodes wrapped around translatable words.
+     *
+     * @param  HTTPRequest $request
+     * Requires header => X-SecurityID
+     * @return HTTPResponse
+     * JSON formatted response
+     */
     public function translateThroughInterface(HTTPRequest $request)
     {
         if (!$request->isPOST()){
@@ -127,6 +161,12 @@ class DictionaryApiController extends Controller
         return $this->getResponse();
     }
 
+    /**
+     * Makes a request to create a new WordPair object and associate with a Dictionary object.
+     *
+     * @param  HTTPRequest $request
+     * @return HTTPResponse
+     */
     public function addWordPair(HTTPRequest $request)
     {
         if(!$this->authorisedUser()){

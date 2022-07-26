@@ -88,6 +88,11 @@ class WordPair extends DataObject
         return $fields;
     }
 
+    /**
+     * validate
+     *
+     * @return void
+     */
     public function validate()
     {
         $result = parent::validate();
