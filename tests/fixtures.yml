@@ -1,0 +1,9 @@
+Dictionary:
+  testDictionary:
+    SourceLanguage: base
+    DestinationLanguage: destination
+WordPair:
+  Base: untranslated
+  Destination: translated
+  Dictionary: =>Dictionary.testDictionary
+
