@@ -4,4 +4,4 @@ After: framework/_config/routes#coreroutes
 ---
 SilverStripe\Control\Director:
   rules:
-    'api/v1/dictionary//$Action/$ID/$Name': 'Signify\TeReoTooltips\DictionaryApiController'
+    'api/v1/dictionary//$Action/$ID/$Name': 'Signify\TeReoTooltips\Controllers\DictionaryApiController'

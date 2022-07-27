@@ -1,6 +1,6 @@
 <?php
 
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Models;
 
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataObject;
@@ -8,12 +8,12 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Security\Permission;
 
 class WordPair extends DataObject
 {
 
-    // Is this an appropriate naming convention?
-    private static $table_name = 'Signify/WordPair_Object';
+    private static $table_name = 'Signify_WordPair';
 
     private static $db = [
         'Base' => "HTMLVarchar",
@@ -30,6 +30,26 @@ class WordPair extends DataObject
     ];
 
     private static $api_access = true;
+
+    public function canView($member = null)
+    {
+        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+    }
+
+    public function canEdit($member = null)
+    {
+        return Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member);
+    }
+
+    public function canDelete($member = null)
+    {
+        return Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member);
+    }
+
+    public function canCreate($member = null, $context = [])
+    {
+        return Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member);
+    }
 
     public function getCMSFields()
     {
@@ -66,6 +86,28 @@ class WordPair extends DataObject
             $second,
         ]);
         return $fields;
+    }
+
+    /**
+     * validate
+     *
+     * @return void
+     */
+    public function validate()
+    {
+        $result = parent::validate();
+
+        if (
+            $this->Dictionary()->WordPairs()->filter([
+            'Base' => $this->Base
+            ])->exists()
+        ) {
+            $result->addError('This base word already exists!');
+        }
+        if (!ctype_alnum($this->Base)) {
+            $result->addError('A base word must be a single word containing only letters or numbers.');
+        }
+        return $result;
     }
 
     public function getCMSValidator()

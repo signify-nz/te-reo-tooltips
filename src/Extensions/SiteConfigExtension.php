@@ -1,6 +1,6 @@
 <?php
 
-namespace Signify\TeReoTooltips;
+namespace Signify\TeReoTooltips\Extensions;
 
 use SilverStripe\Forms\CheckBoxField;
 use SilverStripe\ORM\DataExtension;
@@ -10,14 +10,18 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\View\Requirements;
-
-use SilverStripe\Dev\Debug;
+use Signify\TeReoTooltips\Models\Dictionary;
+use SilverStripe\Forms\LabelField;
+use SilverStripe\Security\Permission;
 
 class SiteConfigExtension extends DataExtension
 {
+    private static $has_many = [
+        'Dictionaries' => Dictionary::class,
+    ];
 
     private static $has_one = [
-        'Dictionary' => Dictionary::class,
+        'ActiveDictionary' => Dictionary::class,
     ];
 
     private static $api_access = true;
@@ -29,18 +33,37 @@ class SiteConfigExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldsToTab('Root.Dictionary', array(
-            $fieldGroup = FieldGroup::create(
-                DropdownField::create('DictionaryID', 'Active Dictionary')
-                    ->setSource(Dictionary::get()->map('ID', 'Title')),
-                CheckBoxField::create('DarkTheme', 'Tooltip dark theme'),
+            $fieldgroup = FieldGroup::create(
+                CheckboxField::create('DarkTheme', 'Tooltip dark theme'),
             ),
-            $grid = GridField::create('name', 'Current dictionaries', Dictionary::get()),
+            $grid = GridField::create('Dictionaries', 'Current dictionaries', $this->owner->Dictionaries()),
         ));
+        if ($this->owner->Dictionaries()->exists()) {
+            $fieldgroup->insertBefore(
+                'DarkTheme',
+                DropdownField::create('ActiveDictionaryID', 'Active Dictionary')
+                ->setSource($this->owner->Dictionaries()->map('ID', 'Title'))
+            );
+            // This nested if statement is intended to ensure that if possible, an active dictionary is always selected
+            // However, i'm not sure it is as comprehensive as I want. May require further changes
+            // use getField() rather than exists?
+            if (!$this->owner->ActiveDictionary()->exists()) {
+                $this->owner->SetField('ActiveDictionary', $this->owner->Dictionaries()->first());
+            };
+            if (!Permission::check('TOOLTIP_DICTIONARY_RIGHTS')) {
+                $fieldgroup->setDisabled(true);
+            }
+        } else {
+            $fieldgroup->insertBefore(
+                'DarkTheme',
+                LabelField::create('No dictionaries currently exist')
+            );
+        };
         $gridConfig = GridFieldConfig_RecordEditor::create();
         $grid->setConfig($gridConfig);
 
         //This requirement is added so that styling is applied to the cms page
-        Requirements::css('vendor/signify-nz/te_reo_tooltips/client/dist/styles/main.css');
+        Requirements::css('signify-nz/te_reo_tooltips:client/dist/styles/main.css');
         return $fields;
     }
 }
