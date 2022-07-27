@@ -1,4 +1,5 @@
 <?php
+
 namespace Signify\TeReoTooltips\Handlers;
 
 use SilverStripe\SiteConfig\SiteConfig;
@@ -8,7 +9,7 @@ use SilverStripe\View\ArrayData;
 
 class ShortcodeHandler
 {
-  public static function parseShortcodes($arguments, $content = null, $parser = null, $tagName = null)
+    public static function parseShortcodes($arguments, $content = null, $parser = null, $tagName = null)
     {
         $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalTranslator');
         return ArrayData::create([

@@ -1,4 +1,5 @@
 <?php
+
 namespace Signify\TeReoTooltips\Extensions;
 
 use SilverStripe\Forms\CheckBoxField;
@@ -37,22 +38,26 @@ class SiteConfigExtension extends DataExtension
             ),
             $grid = GridField::create('Dictionaries', 'Current dictionaries', $this->owner->Dictionaries()),
         ));
-        if ($this->owner->Dictionaries()->exists()){
-            $fieldgroup->insertBefore('DarkTheme',
+        if ($this->owner->Dictionaries()->exists()) {
+            $fieldgroup->insertBefore(
+                'DarkTheme',
                 DropdownField::create('ActiveDictionaryID', 'Active Dictionary')
-                    ->setSource($this->owner->Dictionaries()->map('ID', 'Title')));
+                ->setSource($this->owner->Dictionaries()->map('ID', 'Title'))
+            );
             // This nested if statement is intended to ensure that if possible, an active dictionary is always selected
             // However, i'm not sure it is as comprehensive as I want. May require further changes
             // use getField() rather than exists?
-            if (!$this->owner->ActiveDictionary()->exists()){
+            if (!$this->owner->ActiveDictionary()->exists()) {
                 $this->owner->SetField('ActiveDictionary', $this->owner->Dictionaries()->first());
             };
             if (!Permission::check('TOOLTIP_DICTIONARY_RIGHTS')) {
                 $fieldgroup->setDisabled(true);
             }
         } else {
-            $fieldgroup->insertBefore('DarkTheme',
-                LabelField::create('No dictionaries currently exist'));
+            $fieldgroup->insertBefore(
+                'DarkTheme',
+                LabelField::create('No dictionaries currently exist')
+            );
         };
         $gridConfig = GridFieldConfig_RecordEditor::create();
         $grid->setConfig($gridConfig);

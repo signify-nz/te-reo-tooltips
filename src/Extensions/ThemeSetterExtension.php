@@ -1,4 +1,5 @@
 <?php
+
 namespace Signify\TeReoTooltips\Extensions;
 
 use SilverStripe\Core\Extension;

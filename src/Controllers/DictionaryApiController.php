@@ -27,8 +27,9 @@ class DictionaryApiController extends Controller
      *
      * @return boolean
      */
-    private function authorisedUser(){
-        if( !Security::getCurrentUser() ) {
+    private function authorisedUser()
+    {
+        if (!Security::getCurrentUser()) {
             $this->setResponse(new HTTPResponse("You must be logged in to use this feature.", 401));
             return false;
         }
@@ -46,13 +47,13 @@ class DictionaryApiController extends Controller
      */
     public function index(HTTPRequest $request)
     {
-        if (!$request->isGET()){
+        if (!$request->isGET()) {
             return $this->httpError(400, "Access denied");
         }
-        if(!SecurityToken::inst()->checkRequest($request)){
+        if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         };
-        if(!$this->authorisedUser()){
+        if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
         // TODO this should reference the current site config and only get related dictionaries
@@ -86,13 +87,13 @@ class DictionaryApiController extends Controller
      */
     public function dictionaries(HTTPRequest $request)
     {
-        if (!$request->isGET()){
+        if (!$request->isGET()) {
             return $this->httpError(400, "Access denied");
         }
-        if(!SecurityToken::inst()->checkRequest($request)){
+        if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         };
-        if(!$this->authorisedUser()){
+        if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
         $ID = $request->param('ID');
@@ -143,13 +144,13 @@ class DictionaryApiController extends Controller
      */
     public function translateThroughInterface(HTTPRequest $request)
     {
-        if (!$request->isPOST()){
+        if (!$request->isPOST()) {
             return $this->httpError(400, "Access denied");
         }
-        if(!SecurityToken::inst()->checkRequest($request)){
+        if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         };
-        if(!$this->authorisedUser()){
+        if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
         $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalTranslator');
@@ -169,25 +170,25 @@ class DictionaryApiController extends Controller
      */
     public function addWordPair(HTTPRequest $request)
     {
-        if(!$this->authorisedUser()){
+        if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        if(!SecurityToken::inst()->checkRequest($request)){
+        if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         };
-        if (!$request->isPOST()){
+        if (!$request->isPOST()) {
             return $this->httpError(400, "Access denied");
         };
-        if (!Permission::check('TOOLTIP_WORDPAIR_RIGHTS')){
+        if (!Permission::check('TOOLTIP_WORDPAIR_RIGHTS')) {
             return $this->httpError(400, "Access denied");
         };
         $body = json_decode($request->getBody(), true);
         $base = $body['baseWord'];
         $destination = $body['destinationWord'];
         $id = $request->param('ID');
-        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalUpdater');
+        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalUpdater') ;
         $newPair = $service->addWordPair($base, $destination, $id);
-        if (!$newPair){
+        if (!$newPair) {
             $this->setResponse(new HTTPResponse("Unable to process this request.", 400));
             return $this->getResponse();
         }

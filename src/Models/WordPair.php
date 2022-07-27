@@ -97,9 +97,11 @@ class WordPair extends DataObject
     {
         $result = parent::validate();
 
-        if($this->Dictionary()->WordPairs()->filter([
+        if (
+            $this->Dictionary()->WordPairs()->filter([
             'Base' => $this->Base
-        ])->exists()) {
+            ])->exists()
+        ) {
             $result->addError('This base word already exists!');
         }
         if (!ctype_alnum($this->Base)) {

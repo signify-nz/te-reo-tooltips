@@ -22,7 +22,7 @@ class LocalTranslator implements TranslatorInterface
                 return Dictionary::get_by_id($dictionaryID);
             }
         }
-        if (SiteConfig::current_site_config()->getField('ActiveDictionary')->exists()){
+        if (SiteConfig::current_site_config()->getField('ActiveDictionary')->exists()) {
             return SiteConfig::current_site_config()->getField('ActiveDictionary');
         }
         return null;
@@ -44,7 +44,7 @@ class LocalTranslator implements TranslatorInterface
     public function translateWord($text, $dictionaryID = null)
     {
         $dict = $this->checkLanguage($dictionaryID);
-        if (!$dict){
+        if (!$dict) {
             return null;
         }
         $pairList = $dict->WordPairs();
@@ -61,7 +61,8 @@ class LocalTranslator implements TranslatorInterface
      *
      * Wraps matching words within shortcodes using regex, under the following conditions
      *  -   Matched text is not immediately followed by [/TT] i.e. is already a shortcode.
-     *  -   Matched text is preceded and followed by a non-letter character, this is so that partial words are not selected
+     *  -   Matched text is preceded and followed by a non-letter character,
+     *      this is so that partial words are not selected
      *
      * @param  string $text
      * The text to be searched for matches.
@@ -73,7 +74,7 @@ class LocalTranslator implements TranslatorInterface
     public function translateBody($text, $dictionaryID = null)
     {
         $dict = $this->checkLanguage($dictionaryID);
-        if (!$dict){
+        if (!$dict) {
             return $text;
         }
         $pairs = $dict->WordPairs();

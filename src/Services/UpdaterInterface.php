@@ -1,5 +1,4 @@
 <?php
-// Definitely rename this file, updaterInterface?
 
 namespace Signify\TeReoTooltips\Services;
 

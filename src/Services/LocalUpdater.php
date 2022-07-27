@@ -22,7 +22,7 @@ class LocalUpdater implements UpdaterInterface
                 return Dictionary::get_by_id($dictionaryID);
             }
         }
-        if (SiteConfig::current_site_config()->getField('ActiveDictionary')){
+        if (SiteConfig::current_site_config()->getField('ActiveDictionary')) {
             return SiteConfig::current_site_config()->getField('ActiveDictionary');
         }
         return null;
@@ -48,15 +48,15 @@ class LocalUpdater implements UpdaterInterface
         // some validation occurs at javascript level
         // returning null will result in an error message displayed to user
         $dict = $this->checkLanguage($dictionaryID);
-        if (!$dict || !$Base || !$Destination){
+        if (!$dict || !$Base || !$Destination) {
             return null;
         }
         $pair = new WordPair();
         try {
-        $pair->Base = $Base;
-        $pair->Destination = $Destination;
-        $pair->write();
-        $dict->WordPairs()->add($pair);
+            $pair->Base = $Base;
+            $pair->Destination = $Destination;
+            $pair->write();
+            $dict->WordPairs()->add($pair);
         } catch (\Throwable $th) {
             return null;
         }
