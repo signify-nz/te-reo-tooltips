@@ -56,20 +56,23 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        // TODO this should reference the current site config and only get related dictionaries
-        $dictionaries = Dictionary::get();
-        $dictionaryList = [];
+        $dictionaries = SiteConfig::current_site_config()->Dictionaries();
 
-        foreach ($dictionaries as $dict) {
-            array_push($dictionaryList, [
-                'ID' => $dict->ID,
-                'Title' => $dict->Title,
-                'SourceLanguage' => $dict->SourceLanguage,
-                'DestinationLanguage' => $dict->DestinationLanguage
-            ]);
+        if ($dictionaries) {
+            $dictionaryList = [];
+            foreach ($dictionaries as $dict) {
+                array_push($dictionaryList, [
+                    'ID' => $dict->ID,
+                    'Title' => $dict->Title,
+                    'SourceLanguage' => $dict->SourceLanguage,
+                    'DestinationLanguage' => $dict->DestinationLanguage
+                ]);
+            }
+            $dictionaryList = json_encode($dictionaryList);
+            $this->getResponse()->setBody($dictionaryList);
+        } else {
+            $this->getResponse()->setBody(null);
         }
-        $dictionaryList = json_encode($dictionaryList);
-        $this->getResponse()->setBody($dictionaryList);
         return $this->getResponse();
     }
 
