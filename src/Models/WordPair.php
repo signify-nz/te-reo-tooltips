@@ -88,24 +88,20 @@ class WordPair extends DataObject
         return $fields;
     }
 
-    /**
-     * validate
-     *
-     * @return void
-     */
     public function validate()
     {
         $result = parent::validate();
 
         if (
             $this->Dictionary()->WordPairs()->filter([
-            'Base' => $this->Base
+            'Base' => $this->Base,
+            'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
             $result->addError('This base word already exists!');
         }
-        if (!ctype_alnum($this->Base)) {
-            $result->addError('A base word must be a single word containing only letters or numbers.');
+        if (preg_match('/\s/', $this->Base)) {
+            $result->addError('A base word must be a single word only with no spaces.');
         }
         return $result;
     }
