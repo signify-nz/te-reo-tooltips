@@ -8,16 +8,14 @@ use SilverStripe\Dev\SapphireTest;
 class LocalTranslatorTest extends SapphireTest
 {
 
-    protected static $fixture_file = [
-        'fixtures.yml'
-    ];
+    protected static $fixture_file = 'fixtures.yml';
 
     public function testTranslateWord()
     {
         $service = new LocalTranslator();
         $observed = $service->translateWord(
             'untranslated',
-            $this->objFromFixture('Dictionary', 'testDictionary')->ID()
+            $this->objFromFixture('Signify\TeReoTooltips\Models\Dictionary', 'testDictionary')->ID
         );
         $expected = 'translated';
         $this->assertEquals($expected, $observed);
@@ -28,9 +26,9 @@ class LocalTranslatorTest extends SapphireTest
         $service = new LocalTranslator();
         $observed = $service->translateBody(
             'abcdef untranslated ghijkl',
-            $this->objFromFixture('Dictionary', 'testDictionary')->ID()
+            $this->objFromFixture('Signify\TeReoTooltips\Models\Dictionary', 'testDictionary')->ID
         );
-        $expected = 'abcdef translated ghijkl';
+        $expected = 'abcdef [TT]untranslated[/TT] ghijkl';
         $this->assertEquals($expected, $observed);
     }
 }

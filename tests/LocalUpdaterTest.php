@@ -8,9 +8,7 @@ use SilverStripe\Dev\SapphireTest;
 class LocalUpdaterTest extends SapphireTest
 {
 
-    protected static $fixture_file = [
-        'fixtures.yml'
-    ];
+    protected static $fixture_file = 'fixtures.yml';
 
     public function testAddWordPair()
     {
@@ -18,10 +16,9 @@ class LocalUpdaterTest extends SapphireTest
         $observed = $service->addWordPair(
             'BaseTest',
             'DestinationTest',
-            $this->objFromFixture('Dictionary', 'testDictionary')->ID()
+            $this->objFromFixture('Signify\TeReoTooltips\Models\Dictionary', 'testDictionary')->ID
         );
-        $expected =
-        $this->assertEquals('BaseTest', $observed);
-        $this->assertEquals('DestinationTest', $observed);
+        $this->assertEquals('BaseTest', $observed->Base);
+        $this->assertEquals('DestinationTest', $observed->Destination);
     }
 }
