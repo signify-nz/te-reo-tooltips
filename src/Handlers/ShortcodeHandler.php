@@ -2,6 +2,7 @@
 
 namespace Signify\TeReoTooltips\Handlers;
 
+use Signify\TeReoTooltips\Services\LocalTranslator;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Injector\Injector;
@@ -11,7 +12,7 @@ class ShortcodeHandler
 {
     public static function parseShortcodes($arguments, $content = null, $parser = null, $tagName = null)
     {
-        $service = Injector::inst()->get('Translator');
+        $service = Injector::inst()->get(LocalTranslator::class);
         return ArrayData::create([
             'Content' => $content,
             'Translation' => $service->translateWord($content),

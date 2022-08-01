@@ -1,5 +1,5 @@
 SilverStripe\Core\Injector\Injector:
-  Translator:
+  Signify\TeReoTooltips\Services\LocalTranslator:
     class: Signify\TeReoTooltips\Services\LocalTranslator
-  Updater:
+  Signify\TeReoTooltips\Services\LocalUpdater:
     class: Signify\TeReoTooltips\Services\LocalUpdater

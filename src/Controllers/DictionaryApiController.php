@@ -8,6 +8,8 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Injector\Injector;
 use Signify\TeReoTooltips\Models\Dictionary;
+use Signify\TeReoTooltips\Services\LocalUpdater;
+use Signify\TeReoTooltips\Services\LocalTranslator;
 use SilverStripe\Control\Director;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
@@ -147,7 +149,7 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        $service = Injector::inst()->get('Translator');
+        $service = Injector::inst()->get(LocalTranslator::class);;
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
         $this->getResponse()->setBody($translation);
@@ -177,7 +179,7 @@ class DictionaryApiController extends Controller
         $base = $body['baseWord'];
         $destination = $body['destinationWord'];
         $id = $request->param('ID');
-        $service = Injector::inst()->get('Updater') ;
+        $service = Injector::inst()->get(LocalUpdater::class);
         $newPair = $service->addWordPair($base, $destination, $id);
         if (!$newPair) {
             $this->setResponse(new HTTPResponse("Unable to process this request.", 400));
