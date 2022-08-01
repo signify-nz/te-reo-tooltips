@@ -47,12 +47,9 @@ class DictionaryApiController extends Controller
      */
     public function index(HTTPRequest $request)
     {
-        if (!$request->isGET()) {
+        if (!$request->isGET() || !SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         }
-        if (!SecurityToken::inst()->checkRequest($request)) {
-            return $this->httpError(400, "Access denied");
-        };
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
@@ -90,12 +87,9 @@ class DictionaryApiController extends Controller
      */
     public function dictionaries(HTTPRequest $request)
     {
-        if (!$request->isGET()) {
+        if (!$request->isGET() || !SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         }
-        if (!SecurityToken::inst()->checkRequest($request)) {
-            return $this->httpError(400, "Access denied");
-        };
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
@@ -147,16 +141,13 @@ class DictionaryApiController extends Controller
      */
     public function translateThroughInterface(HTTPRequest $request)
     {
-        if (!$request->isPOST()) {
+        if (!$request->isPOST() || !SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
         }
-        if (!SecurityToken::inst()->checkRequest($request)) {
-            return $this->httpError(400, "Access denied");
-        };
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalTranslator');
+        $service = Injector::inst()->get('Translator');
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
         $this->getResponse()->setBody($translation);
@@ -176,12 +167,9 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        if (!SecurityToken::inst()->checkRequest($request)) {
+        if (!$request->isPOST() || !SecurityToken::inst()->checkRequest($request)) {
             return $this->httpError(400, "Access denied");
-        };
-        if (!$request->isPOST()) {
-            return $this->httpError(400, "Access denied");
-        };
+        }
         if (!Permission::check('TOOLTIP_WORDPAIR_RIGHTS')) {
             return $this->httpError(400, "Access denied");
         };
@@ -189,7 +177,7 @@ class DictionaryApiController extends Controller
         $base = $body['baseWord'];
         $destination = $body['destinationWord'];
         $id = $request->param('ID');
-        $service = Injector::inst()->create('Signify\TeReoTooltips\Services\LocalUpdater') ;
+        $service = Injector::inst()->get('Updater') ;
         $newPair = $service->addWordPair($base, $destination, $id);
         if (!$newPair) {
             $this->setResponse(new HTTPResponse("Unable to process this request.", 400));

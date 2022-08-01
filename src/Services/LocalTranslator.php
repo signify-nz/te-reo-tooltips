@@ -2,12 +2,14 @@
 
 namespace Signify\TeReoTooltips\Services;
 
-use Exception;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\SiteConfig\SiteConfig;
 use Signify\TeReoTooltips\Models\Dictionary;
 
 class LocalTranslator implements TranslatorInterface
 {
+    use Injectable;
+
     /**
      * Retrieves a Dictionary object by ID, or the currently active dictionary if no ID is provided.
      *
