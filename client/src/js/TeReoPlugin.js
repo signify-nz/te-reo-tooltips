@@ -212,7 +212,7 @@ function restoreShortcodes(content) {
     const endOffset = 7;
     return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline 1px dashed;">)(.+?)(<\/span>)/g, (match) => {
         if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-            restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[ / TT]`;
+            restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[/TT]`;
         } else {
             restoration = checkForMatches(match.slice(startOffset, match.length - endOffset));
         }
