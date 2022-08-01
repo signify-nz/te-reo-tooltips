@@ -9,10 +9,3 @@ Signify\TeReoTooltips\Models\Dictionary:
     DestinationLanguage: destination
     WordPairs: =>Signify\TeReoTooltips\Models\WordPair.testWordPair
     ID: 999
-
-# php7.4 ./vendor/bin/phpunit tests/
-# sudo -u www-data php7.4 vendor/bin/phpunit vendor/signify-nz/te_reo_tooltips/tests/ flush=1
-# mmiddleton@multiphpdev03:/home$
-# rm mmiddleton/tooltips/tests/LocalUpdaterTest.php
-# cp webspace/silverstripe-tutorial-dev1/site/vendor/signify-nz/te_reo_tooltips/tests/LocalUpdaterTest.php  mmiddleton/tooltips/tests/
-# php7.4 mmiddleton/tooltips/vendor/bin/phpunit mmiddleton/tooltips/tests

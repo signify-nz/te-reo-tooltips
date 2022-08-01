@@ -3,6 +3,7 @@
 namespace Signify\TeReoTooltips\Tests;
 
 use Signify\TeReoTooltips\Controllers\DictionaryApiController;
+use Signify\TeReoTooltips\Models\Dictionary;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\Security\SecurityToken;
@@ -10,56 +11,64 @@ use SilverStripe\Security\Member;
 
 class DictionaryApiControllerTest extends FunctionalTest
 {
-
-    public function indexTest()
+    public function testIndex()
     {
-        $token = SecurityToken::inst()->getValue();
-        $header = [
-            'X-SecurityID: ' . $token,
+        SecurityToken::enable();
+        // We should see an error response, wrong request type
+        $wrongMethod = $this->post('/api/v1/dictionary/index', null);
+        $this->assertEquals(400, $wrongMethod->getStatusCode());
+
+        // We should see an error response, no security token provided
+        $noToken = $this->get('/api/v1/dictionary/index', null);
+        $this->assertEquals(400, $noToken->getStatusCode());
+
+        // We should see an error response, user not logged in
+        $headers = [
+            'X-SecurityID' => SecurityToken::inst()->getValue(),
         ];
-        $index = $this->get('/api/v1/dictionary/index', null, $header);
-        $this->assertEquals(400, $index->getStatusCode());
-        // not a good test condition
-        $this->assertNotEquals(null, $index->getBody());
+        $noMember = $this->get('/api/v1/dictionary/index', null, $headers);
+        $this->assertEquals(401, $noMember->getStatusCode());
+
+        // Should successfully access API
+        $this->logInAs(Member::get()->first());
+        $authorized = $this->get('/api/v1/dictionary/index', null, $headers);
+        $this->assertNotEquals(null, $authorized->getBody());
+        $this->assertNotEquals(400, $authorized->getStatusCode());
+        $this->assertNotEquals(401, $authorized->getStatusCode());
     }
 
-    public function dictionariesTest()
+    public function testDictionaries()
     {
-        $token = SecurityToken::inst()->getValue();
-        $header = [
-            'X-SecurityID: ' . $token,
-        ];
-        $index = $this->get('/api/v1/dictionary/index', null, $header);
-        $this->assertEquals(400, $index->getStatusCode());
+        $this->logInAs(Member::get()->first());
+        $dictRequest = $this->get('/api/v1/dictionary/dictionaries', null);
+        $data = json_decode($dictRequest->getBody(), true);
+        $this->assertArrayHasKey('ID', $data[0]);
+        $this->assertArrayHasKey('Base', $data[0]);
+        $this->assertArrayHasKey('Destination', $data[0]);
     }
 
     public function testTranslateThroughInterface()
     {
-        // We should see an error message, user not logged in
-        $noAuth = $this->post('/api/v1/dictionary/translateThroughInterface');
-        $this->assertEquals(400, $noAuth->getStatusCode());
-
-        // We should see an error message, no security token provided
-        $this->logInAs(Member::post()->first());
-        $noToken = $this->get('/api/v1/dictionary/translateThroughInterface');
-        $this->assertEquals(400, $noToken->getStatusCode());
-
-        $token = SecurityToken::inst()->getValue();
-        $header = [
-            'X-SecurityID: ' . $token,
-        ];
+        $this->logInAs(Member::get()->first());
         $body = ' work ';
-        $authorised = $this->post('/api/v1/dictionary/translateThroughInterface', null, $header, null, $body);
-        $this->assertEquals(200, $authorised->getStatusCode());
+        $authorised = $this->post('/api/v1/dictionary/translateThroughInterface', null, null, null, $body);
         $this->assertEquals(' [TT]work[/TT] ', $authorised->getBody());
-
-        // We should see an error message, wrong request type
-        $wrongMethod = $this->get('/api/v1/dictionary/translateThroughInterface', null, $header);
-        $this->assertEquals(400, $wrongMethod->getStatusCode());
     }
 
-    public function addWordPairTest()
+    public function testAddWordPair()
     {
-        $token = SecurityToken::inst()->getValue();
+        $this->loadFixture('fixtures.yml');
+        $this->logInAs(Member::get()->first());
+        $values = [
+            'baseWord' => 'Work',
+            'destinationWord' => 'Mahi'
+        ];
+        $body = json_encode($values);
+        $newWord = $this->post('/api/v1/dictionary/addWordPair/999', null, null, null, $body);
+        $data = json_decode($newWord->getBody(), true);
+        $this->assertArrayHasKey('ID', $data[0]);
+        $this->assertArrayHasKey('Base', $data[0]);
+        $this->assertArrayHasKey('Destination', $data[0]);
+        $testDict->Dictionaries->get_by_id($data[0][ID])->destroy();
     }
 }
