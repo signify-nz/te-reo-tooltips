@@ -108,7 +108,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         } else {
             tinymce.activeEditor.windowManager.close();
             const request = new XMLHttpRequest();
-            const path = ` / api / v1 / dictionary / addWordPair / ${id}`;
+            const path = `/api/v1/dictionary/addWordPair/${id}`;
             request.open('POST', path);
             const tokenElement = document.getElementById('Form_EditForm_SecurityID');
             const token = tokenElement.getAttribute('value');
@@ -153,7 +153,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   // pass dictionary ID as argument to receive that dictionary, pass 0 to get currently dictionary
     function getDictionary(id) {
         const request = new XMLHttpRequest();
-        const path = ` / api / v1 / dictionary / dictionaries / ${id}`;
+        const path = `/api/v1/dictionary/dictionaries/${id}`;
         request.open('GET', path);
         const tokenElement = document.getElementById('Form_EditForm_SecurityID');
         const token = tokenElement.getAttribute('value');
@@ -171,6 +171,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     }
 
     function getDictionaries() {
+      // needs to get only this siteconfig dicts
         const request = new XMLHttpRequest();
         const path = '/api/v1/dictionary/index/';
         request.open('GET', path);
@@ -181,13 +182,15 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         request.onreadystatechange = function handleDictionaryResponse() {
             if (this.readyState === 4 && this.status === 200) {
                 let response = request.responseText;
-                response = JSON.parse(response);
-                for (let i = 0; i < response.length; i++) {
-                    library.push({
-                        text: response[i].Title,
-                        value: response[i].Title,
-                        id: response[i].ID
-                    });
+                if (response) {
+                  response = JSON.parse(response);
+                  for (let i = 0; i < response.length; i++) {
+                      library.push({
+                          text: response[i].Title,
+                          value: response[i].Title,
+                          id: response[i].ID
+                      });
+                  }
                 }
             }
         };
@@ -209,7 +212,7 @@ function restoreShortcodes(content) {
     const endOffset = 7;
     return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline 1px dashed;">)(.+?)(<\/span>)/g, (match) => {
         if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-            restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[ / TT]`;
+            restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[/TT]`;
         } else {
             restoration = checkForMatches(match.slice(startOffset, match.length - endOffset));
         }
@@ -313,7 +316,7 @@ function addToDictMenu(selection) {
 function handleActiveState() {
     const btn = this;
     // there must be a better event to bind this to
-    editor.on('NodeChange', () => {
+    editor.on('MouseMove', () => {
         btn.disabled(library.length === 0);
     });
 }
@@ -324,6 +327,7 @@ function handleActiveState() {
             const selection = editor.selection.getContent({ format: 'text' });
             addToDictMenu(selection);
         },
+        onPostRender: handleActiveState
     });
 
   editor.addButton('translate', {
@@ -345,6 +349,7 @@ function handleActiveState() {
             bookmark = tinymce.activeEditor.selection.getBookmark(2, true);
             treeWalk(editor.selection.getRng());
             tinymce.activeEditor.fire('change');
-        }
+        },
+        onPostRender: handleActiveState
     });
 });

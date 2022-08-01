@@ -2,12 +2,15 @@
 
 namespace Signify\TeReoTooltips\Services;
 
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\SiteConfig\SiteConfig;
 use Signify\TeReoTooltips\Models\WordPair;
 use Signify\TeReoTooltips\Models\Dictionary;
 
 class LocalUpdater implements UpdaterInterface
 {
+    use Injectable;
+
     /**
      * Retrieves a Dictionary object by ID, or the currently active dictionary if no ID is provided.
      *

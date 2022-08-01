@@ -1,9 +1,11 @@
-Dictionary:
+Signify\TeReoTooltips\Models\WordPair:
+  testWordPair:
+    Base: untranslated
+    Destination: translated
+Signify\TeReoTooltips\Models\Dictionary:
   testDictionary:
+    Title: title
     SourceLanguage: base
     DestinationLanguage: destination
-WordPair:
-  Base: untranslated
-  Destination: translated
-  Dictionary: =>Dictionary.testDictionary
-
+    WordPairs: =>Signify\TeReoTooltips\Models\WordPair.testWordPair
+    ID: 999

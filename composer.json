@@ -18,7 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Signify\\TeReoTooltips\\": "src/"
+            "Signify\\TeReoTooltips\\": "src/",
+            "Signify\\TeReoTooltips\\Tests": "tests/"
         }
     },
     "extra": {
