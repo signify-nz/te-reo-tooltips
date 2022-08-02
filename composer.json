@@ -30,6 +30,12 @@
             "client/dist"
         ]
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@gitea:mmiddleton/te-reo-tooltips.git"
+        }
+    ],
     "minimum-stability": "dev",
     "prefer-stable": true
 }
