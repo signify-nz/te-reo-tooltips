@@ -124,7 +124,6 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
                     tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
                 }
                 if (this.readyState === 4 && this.status === 400) {
-                    dictionaryMap.set(base, destination);
                     tinymce.activeEditor.windowManager.alert(this.response);
                 }
             };
