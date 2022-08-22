@@ -106,7 +106,6 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         } else if (dictionaryMap.has(base)) {
             tinymce.activeEditor.windowManager.alert(`This word already has a translation! (${dictionaryMap.get(base)})`);
         } else {
-            tinymce.activeEditor.windowManager.close();
             const request = new XMLHttpRequest();
             const path = `/api/v1/dictionary/addWordPair/${id}`;
             request.open('POST', path);
@@ -121,6 +120,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
             request.onreadystatechange = function handleUpdateResponse() {
                 if (this.readyState === 4 && this.status === 200) {
                     dictionaryMap.set(base, destination);
+                    tinymce.activeEditor.windowManager.close();
                     tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
                 }
                 if (this.readyState === 4 && this.status === 400) {
