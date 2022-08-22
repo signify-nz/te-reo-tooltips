@@ -149,7 +149,7 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        $service = Injector::inst()->get(LocalTranslator::class);;
+        $service = Injector::inst()->get(LocalTranslator::class);
         $queryText = $request->getBody();
         $translation = $service->translateBody($queryText);
         $this->getResponse()->setBody($translation);
