@@ -1,47 +1,47 @@
-.TeReoToolTip {
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.349);
-    display: inline-block;
+.te-reo-tooltip {
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.349);
+  display: inline-block;
 }
 
-.TeReoToolTip:before {
-    content: attr(data-originaltext);
-    position: absolute;
-    padding: 0.25em;
-    border-radius: 10px;
-    background: rgba(218, 216, 216, 0.75);
-    color: rgba(27, 27, 27, 0.9);
-    text-align: center;
-    display: none;
-    transform: translateY(-2.25em);
-    white-space: nowrap;
+.te-reo-tooltip:before {
+  content: attr(data-originaltext);
+  position: absolute;
+  padding: 0.25em;
+  border-radius: 10px;
+  background: rgba(218, 216, 216, 0.75);
+  color: rgba(27, 27, 27, 0.9);
+  text-align: center;
+  display: none;
+  transform: translateY(-2.25em);
+  white-space: nowrap;
 }
 
-.TeReoToolTip:hover:before {
-    display: inline-block;
+.te-reo-tooltip:hover:before {
+  display: inline-block;
 }
 
-.TeReoToolTip.TeReoToolTip--Dark-Theme {
-    border-bottom: 1px dashed rgb(255, 255, 255);
+.te-reo-tooltip--dark-theme {
+  border-bottom: 1px dashed rgb(255, 255, 255);
 }
 
-.TeReoToolTip.TeReoToolTip--Dark-Theme:before {
-    background: rgba(58, 55, 55, .75);
-    color: rgb(247, 244, 244);
+.te-reo-tooltip--dark-theme:before {
+  background: rgba(58, 55, 55, .75);
+  color: rgb(247, 244, 244);
 }
 
-.TeReoToolTip.TeReoToolTip--Custom-Theme {
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.349);
+.te-reo-tooltip--custom-theme {
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.349);
 }
 
-.TeReoToolTip.TeReoToolTip--Custom-Theme:before {
-    background: var(---tooltip-customhexcode);
-    color: rgba(27, 27, 27, 0.9);
+.te-reo-tooltip--custom-theme:before {
+  background: var(---tooltip-customhexcode);
+  color: rgba(27, 27, 27, 0.9);
 }
 
 #Form_EditForm_ActiveDictionaryIDDarkTheme {
-    margin-left: 0%;
+  margin-left: 0%;
 }
 
-#Form_EditForm_LabelFieldNodictionariescurrentlyexistDarkTheme {
+#Form_EditForm_NoDictionaryWarningLabelDarkTheme {
   margin-left: 0%;
 }
