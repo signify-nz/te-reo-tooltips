@@ -17,8 +17,7 @@ The tooltips are generated dynamically on page-load, so will reflect the diction
 * TinyMCE 4
 
 ## Installation
-To install this module add the following lines to your composer.json and run 'composer install'.
-Once installed, run dev/build?flush=1
+Install via [composer](https://getcomposer.org)
 
 ```JSON
 
@@ -33,6 +32,8 @@ Once installed, run dev/build?flush=1
     ]
 
 ```
+
+Once installed, run dev/build?flush=1
 
 As this is a private repository, you will need to authenticate in order to access it.
 
@@ -51,6 +52,38 @@ Signify\TeReoTooltips\SiteTreeExtension:
       custom_hexcode:
         '#D34324'
 
+```
+
+## CSS/JS Development
+### Setup
+For development you will need Node.js and yarn installed.
+
+Next, you need to install the required npm packages.
+```bash
+yarn install
+```
+### Compiling assets
+You can compile assets using `yarn watch`.
+
+Produce minified (production) files using `yarn package`.
+
+### Linting
+Check over your JavaScript and SASS source code individually:
+
+```bash
+yarn lint-js
+yarn lint-sass
+```
+
+You can also lint both in a single command:
+```bash
+yarn lint
+```
+
+## Testing
+To run tests, use the following command
+```bash
+vendor/bin/phpunit vendor/signify-nz/te-reo-tooltips/tests/
 ```
 
 ## Maintainers
@@ -72,3 +105,5 @@ Please report security issues to the module maintainers directly. Please don't f
 
 ## Development and contribution
 If you would like to make contributions to the module please ensure you raise a pull request and discuss with the module maintainers.
+
+[Contributing](CONTRIBUTING.md)

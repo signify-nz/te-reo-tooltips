@@ -1,14 +1,13 @@
 # Contributing
-- Maintenance on this module is a shared effort of those who use it
-- To contribute improvements to the code, ensure you raise a pull request and discuss with the module maintainers
-- Please follow the SilverStripe [code contribution guidelines](https://docs.silverstripe.org/en/contributing/code/) and [Module Standard](https://docs.silverstripe.org/en/developer_guides/extending/modules/#module-standard)
-- Supply documentation that follows the [GitHub Flavored Markdown](https://help.github.com/articles/markdown-basics/) conventions
-- When having discussions about this module in issues or pull request please adhere to the [SilverStripe Community Code of Conduct](https://docs.silverstripe.org/en/contributing/code_of_conduct/)
+As an open source project, this module is open for anyone to use, fork, modify, or contribute back to.
 
+If you encounter a bug, you can either
+[leave an issue](https://github.com/signify-nz/silverstripe-security-headers/issues), or you could
+try your hand at fixing it via [a pull request](https://github.com/signify-nz/silverstripe-security-headers/pulls).
 
-## Contributor license agreement
-By supplying code to this module in patches, tickets and pull requests, you agree to assign copyright 
-of that code to MODULE_COPYRIGHT_HOLDER_HERE., on the condition that these code changes are released under the 
-same BSD license as the original module. We ask for this so that the ownership in the license is clear 
-and unambiguous. By releasing this code under a permissive license such as BSD, this copyright assignment 
-won't prevent you from using the code in any way you see fit.
+Any feature requests or recommendations should be raised as [an issue](https://github.com/signify-nz/silverstripe-security-headers/issues).
+
+This module adheres to [the SilverStripe module standards](https://docs.silverstripe.org/en/4/developer_guides/extending/modules/#module-standard)
+Commit messages should be [semantic](https://seesparkbox.com/foundry/semantic_commit_messages), though the style used for this module differs from that reference in the following ways:
+- The first letter after the commit type is capitalised.
+- A fullstop is placed at the end of the commit message.
