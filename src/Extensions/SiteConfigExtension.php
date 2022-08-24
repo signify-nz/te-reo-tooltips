@@ -63,7 +63,7 @@ class SiteConfigExtension extends DataExtension
         $grid->setConfig($gridConfig);
 
         //This requirement is added so that styling is applied to the cms page
-        Requirements::css('signify-nz/te_reo_tooltips:client/dist/styles/main.css');
+        Requirements::css('signify-nz/te-reo-tooltips:client/dist/styles/main.css');
         return $fields;
     }
 }

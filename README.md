@@ -23,7 +23,7 @@ Once installed, run dev/build?flush=1
 ```JSON
 
     "require": {
-        "signify-nz/te_reo_tooltips": "dev-master"
+        "signify-nz/te-reo-tooltips": "dev-master"
     },
     "repositories": [
         {

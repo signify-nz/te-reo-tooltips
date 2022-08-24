@@ -9,6 +9,6 @@ class ThemeSetterExtension extends Extension
 {
     public function onAfterInit()
     {
-        Requirements::css('signify-nz/te_reo_tooltips:client/dist/styles/main.css');
+        Requirements::css('signify-nz/te-reo-tooltips:client/dist/styles/main.css');
     }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "silverstripe-module-skeleton",
-  "description": "Description of your module",
+  "name": "te-reo-tooltips",
+  "description": "A module for quick translations.",
   "main": "./client/src/boot/index.js",
   "author": "You",
   "engines": {

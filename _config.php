@@ -3,7 +3,7 @@
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\View\Parsers\ShortcodeParser;
 
-HtmlEditorConfig::get('cms')->enablePlugins(['TeReoPlugin' => '/vendor/signify-nz/te_reo_tooltips/client/dist/js/bundle.js']);
+HtmlEditorConfig::get('cms')->enablePlugins(['TeReoPlugin' => '/vendor/signify-nz/te-reo-tooltips/client/dist/js/bundle.js']);
 HtmlEditorConfig::get('cms')->addButtonsToLine(1, 'translate');
 
 //setting the contextmenu config will override the defaults, must maintain the original configuration when adding

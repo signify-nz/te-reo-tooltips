@@ -1,5 +1,5 @@
 ---
-Name: approutes
+Name: signify-te-reo-tooltips-routes
 After: framework/_config/routes#coreroutes
 ---
 SilverStripe\Control\Director:

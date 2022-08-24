@@ -21,7 +21,7 @@ class SiteTreeExtension extends Extension
         $customHexcode = $this->config()->get('custom_hexcode');
         if ($customHexcode !== 0) {
             $fields->dataFieldByName('Content')->setAttribute('data-custom-hexcode', $customHexcode);
-            Requirements::css('vendor/signify-nz/te_reo_tooltips/client/dist/styles/main.css');
+            Requirements::css('signify-nz/te-reo-tooltips:client/dist/styles/main.css');
         }
         return $fields;
     }
