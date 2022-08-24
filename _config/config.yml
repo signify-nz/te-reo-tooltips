@@ -3,18 +3,18 @@ Name: signify-te-reo-tooltips
 ---
 
 SilverStripe\CMS\Controllers\ContentController:
-      extensions:
-        - Signify\TeReoTooltips\Extensions\ThemeSetterExtension
+  extensions:
+    - Signify\TeReoTooltips\Extensions\ThemeSetterExtension
 
 SilverStripe\SiteConfig\SiteConfig:
-      extensions:
-        - Signify\TeReoTooltips\Extensions\SiteConfigExtension
+  extensions:
+    - Signify\TeReoTooltips\Extensions\SiteConfigExtension
 
 SilverStripe\CMS\Model\SiteTree:
-      extensions:
-        - Signify\TeReoTooltips\Extensions\SiteTreeExtension
+  extensions:
+    - Signify\TeReoTooltips\Extensions\SiteTreeExtension
 
 #This can be altered to insert a custom colour, will not validate input value. e.g. '#D34324' , quotation marks included.
 Signify\TeReoTooltips\SiteTreeExtension:
-      custom_hexcode:
-        0
+  custom_hexcode:
+    0
