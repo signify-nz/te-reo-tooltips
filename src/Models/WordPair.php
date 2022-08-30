@@ -5,6 +5,7 @@ namespace Signify\TeReoTooltips\Models;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
@@ -61,6 +62,7 @@ class WordPair extends DataObject
 
     public function getCMSFields()
     {
+        $fields = parent::getCMSFields();
         $limitedConfig = HtmlEditorConfig::get('limited');
         $limitedConfig->setOptions([
             'friendly_name'      => 'Limited WYSIWYG Editor',
@@ -89,10 +91,16 @@ class WordPair extends DataObject
         $second = HTMLEditorField::create('Destination', 'Destination Language')
             ->setEditorConfig($limitedConfig)
             ->setRows(1);
+        // Hidden fields are generated to pass info to the custom validator
+        $third = HiddenField::create('DictionaryID', 'Dictionary ID');
+        $fourth = HiddenField::create('ID', 'ID');
         $fields = new FieldList([
             $first,
             $second,
+            $third,
+            $fourth
         ]);
+
         return $fields;
     }
 
@@ -112,6 +120,16 @@ class WordPair extends DataObject
             $result->addError('A base word must be a single word only with no spaces.');
         }
         return $result;
+    }
+
+    // Allows validation in the modelAdmin
+    public function getCMSCompositeValidator(): CompositeValidator
+    {
+        $validator = parent::getCMSCompositeValidator();
+        $validator->addValidator(
+            WordPairValidator::create()
+        );
+        return $validator;
     }
 
     public function getCMSValidator()
