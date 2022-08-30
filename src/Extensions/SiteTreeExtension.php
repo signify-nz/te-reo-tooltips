@@ -2,7 +2,6 @@
 
 namespace Signify\TeReoTooltips\Extensions;
 
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
