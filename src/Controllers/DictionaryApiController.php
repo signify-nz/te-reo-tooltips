@@ -6,7 +6,6 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\Core\Injector\Injector;
 use Signify\TeReoTooltips\Models\Dictionary;
 use Signify\TeReoTooltips\Services\LocalUpdater;
 use Signify\TeReoTooltips\Services\LocalTranslator;
@@ -17,6 +16,21 @@ use SilverStripe\Security\SecurityToken;
 
 class DictionaryApiController extends Controller
 {
+    public $translator;
+
+    public $updater;
+
+    /**
+     * @var array $dependencies
+     */
+    private static $dependencies = [
+        'translator' => '%$LocalTranslator',
+        'updater' => '%$LocalUpdater',
+    ];
+
+    /**
+     * @var array $allowed_actions
+     */
     private static $allowed_actions = [
         'index',
         'dictionaries',
@@ -149,9 +163,8 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        $service = Injector::inst()->get(LocalTranslator::class);
         $queryText = $request->getBody();
-        $translation = $service->translateBody($queryText);
+        $translation = $this->translator->translateBody($queryText);
         $this->getResponse()->setBody($translation);
         $this->getResponse()->addHeader("Access-Control-Allow-Methods", "POST");
         $this->getResponse()->addHeader("Access-Control-Allow-Headers", "x-requested-with");
@@ -178,11 +191,11 @@ class DictionaryApiController extends Controller
         $body = json_decode($request->getBody(), true);
         $base = $body['baseWord'];
         $destination = $body['destinationWord'];
-        $id = $request->param('ID');
-        $service = Injector::inst()->get(LocalUpdater::class);
-        $newPair = $service->addWordPair($base, $destination, $id);
-        if (!$newPair) {
-            $this->setResponse(new HTTPResponse("Unable to process this request.", 400));
+        $id = $body['dictionaryID'];
+        try {
+            $newPair = $this->updater->addWordPair($base, $destination, $id);
+        } catch (\Exception $e) {
+            $this->setResponse(new HTTPResponse($e->getMessage(), 400));
             return $this->getResponse();
         }
         $response = [
