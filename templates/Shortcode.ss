@@ -1,6 +1,6 @@
 <% if $Translation %>
     <span
-        class="TeReoToolTip<% if $Hexcode %> TeReoToolTip--Custom-Theme<% else_if $DarkMode %> TeReoToolTip--Dark-Theme<% end_if %>"
+        class="te-reo-tooltip<% if $Hexcode %> te-reo-tooltip--custom-theme<% else_if $DarkMode %> te-reo-tooltip--dark-theme<% end_if %>"
         data-originaltext="$Content"
         aria-label="The meaning of '$Translation' is '$Content'"
         <% if $Hexcode %>style="---tooltip-customhexcode:$Hexcode"<% end_if %>

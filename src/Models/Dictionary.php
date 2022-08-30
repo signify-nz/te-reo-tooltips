@@ -6,7 +6,13 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Forms\FormAction;
 
+/**
+ * Dictionary
+ *
+ * An object meant to hold WordPairs with a specific language scope
+ */
 class Dictionary extends DataObject
 {
 
@@ -38,12 +44,16 @@ class Dictionary extends DataObject
 
     public function canView($member = null)
     {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+        return Permission::check('TOOLTIP_VIEW_OBJECTS', 'any', $member);
     }
 
     public function canEdit($member = null)
     {
-        return Permission::check('TOOLTIP_DICTIONARY_RIGHTS', 'any', $member);
+        // This check for TOOLTIP_WORDPAIR_RIGHTS enables wordpairs to be editable in the cms gridfield
+        // Inheritance of permissions prevents wordpairs from being editable unless dictionaries are also editable
+        return (Permission::check('TOOLTIP_DICTIONARY_RIGHTS', 'any', $member)
+            || Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member)
+        );
     }
 
     public function canDelete($member = null)
@@ -54,6 +64,17 @@ class Dictionary extends DataObject
     public function canCreate($member = null, $context = [])
     {
         return Permission::check('TOOLTIP_DICTIONARY_RIGHTS', 'any', $member);
+    }
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName([
+            'SiteConfigID',
+        ]);
+
+        return $fields;
     }
 
     public function getCMSValidator()

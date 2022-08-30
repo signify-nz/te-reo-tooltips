@@ -5,19 +5,31 @@ namespace Signify\TeReoTooltips\Models;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Security\Permission;
+use Signify\TeReoTooltips\Validators\WordPairValidator;
+use SilverStripe\Forms\CompositeValidator;
+use SilverStripe\ORM\ValidationResult;
 
+/**
+ * WordPair
+ *
+ * An object to define the relationship between a word and a translation of that word
+ */
 class WordPair extends DataObject
 {
 
     private static $table_name = 'Signify_WordPair';
 
+    // Do these need to be HTMLVarchar anymore?
+    // You strip tags throughout your program but I don't think you ever use them
+    // Consider changing to Text or Varchar
     private static $db = [
-        'Base' => "HTMLVarchar",
-        'Destination' => "HTMLVarchar",
+        'Base' => 'HTMLVarchar',
+        'Destination' => 'HTMLVarchar',
     ];
 
     private static $has_one = [
@@ -33,7 +45,7 @@ class WordPair extends DataObject
 
     public function canView($member = null)
     {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+        return Permission::check('TOOLTIP_VIEW_OBJECTS', 'any', $member);
     }
 
     public function canEdit($member = null)
@@ -53,6 +65,7 @@ class WordPair extends DataObject
 
     public function getCMSFields()
     {
+        $fields = parent::getCMSFields();
         $limitedConfig = HtmlEditorConfig::get('limited');
         $limitedConfig->setOptions([
             'friendly_name'      => 'Limited WYSIWYG Editor',
@@ -81,16 +94,23 @@ class WordPair extends DataObject
         $second = HTMLEditorField::create('Destination', 'Destination Language')
             ->setEditorConfig($limitedConfig)
             ->setRows(1);
+        // Hidden fields are generated to pass info to the custom validator
+        $third = HiddenField::create('DictionaryID', 'Dictionary ID');
+        $fourth = HiddenField::create('ID', 'ID');
         $fields = new FieldList([
             $first,
             $second,
+            $third,
+            $fourth
         ]);
+
         return $fields;
     }
 
+    // Allows validation when additions are made from the text editor
     public function validate()
     {
-        $result = parent::validate();
+        $result = ValidationResult::create();
 
         if (
             $this->Dictionary()->WordPairs()->filter([
@@ -98,12 +118,22 @@ class WordPair extends DataObject
             'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
-            $result->addError('This base word already exists!');
+            return $result->addError('This base word already exists!');
         }
-        if (preg_match('/\s/', $this->Base)) {
-            $result->addError('A base word must be a single word only with no spaces.');
+        if (preg_match('/\s/', $this->Base) || str_contains($this->Base, '​')) {
+            return $result->addError('A base word must be a single word only with no spaces.');
         }
         return $result;
+    }
+
+    // Allows validation in the modelAdmin
+    public function getCMSCompositeValidator(): CompositeValidator
+    {
+        $validator = parent::getCMSCompositeValidator();
+        $validator->addValidator(
+            WordPairValidator::create()
+        );
+        return $validator;
     }
 
     public function getCMSValidator()

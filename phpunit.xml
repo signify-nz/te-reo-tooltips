@@ -1,5 +1,5 @@
 <phpunit bootstrap="vendor/silverstripe/cms/tests/bootstrap.php" colors="true">
-    <testsuite name="signify-nz/te_reo_tooltips">
+    <testsuite name="signify-nz/te-reo-tooltips">
         <directory>tests/</directory>
     </testsuite>
     <filter>

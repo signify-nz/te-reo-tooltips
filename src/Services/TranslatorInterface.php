@@ -2,10 +2,15 @@
 
 namespace Signify\TeReoTooltips\Services;
 
+/**
+ * TranslatorInterface
+ *
+ * Handles the translation of text
+ */
 interface TranslatorInterface
 {
     /**
-     * Searches
+     * Translates a singular word
      *
      * @param  string $text
      * Singular word to be translated
@@ -17,7 +22,7 @@ interface TranslatorInterface
     public function translateWord($text, $languageID);
 
     /**
-     * translateBody
+     * Translates all applicable words within a body of text
      *
      * @param  string $text
      * A body of text to be translated

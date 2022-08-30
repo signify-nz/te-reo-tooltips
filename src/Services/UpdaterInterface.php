@@ -2,6 +2,11 @@
 
 namespace Signify\TeReoTooltips\Services;
 
+/**
+ * UpdaterInterface
+ *
+ * Handles the creation of WordPairs
+ */
 interface UpdaterInterface
 {
     /**

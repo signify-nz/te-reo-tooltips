@@ -1,5 +1,5 @@
 {
-    "name": "signify-nz/te_reo_tooltips",
+    "name": "signify-nz/te-reo-tooltips",
     "description": "A module for quick translations.",
     "type": "silverstripe-vendormodule",
     "keywords": [
@@ -31,5 +31,11 @@
         ]
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "silverstripe/vendor-plugin": true
+        }
+    }
 }
