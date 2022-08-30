@@ -1,4 +1,7 @@
 node_modules
 /vendor/
 .DS_Store
+/assets/
+resources/
+yarn-error.log
 
