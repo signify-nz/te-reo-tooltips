@@ -66,6 +66,17 @@ class Dictionary extends DataObject
         return Permission::check('TOOLTIP_DICTIONARY_RIGHTS', 'any', $member);
     }
 
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName([
+            'SiteConfigID',
+        ]);
+
+        return $fields;
+    }
+
     public function getCMSValidator()
     {
         return new RequiredFields(array('Title', 'SourceLanguage', 'DestinationLanguage'));
