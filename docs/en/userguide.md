@@ -4,7 +4,7 @@ This module allows content authors to quickly make translations through the tiny
 
 Those translations then render on your site with a tooltip displaying their untranslated content. See below:
 
-![The permissions menu](/assets/images/overview.png "The permissions menu")
+![The permissions menu](/docs/en/images/overview.png "The permissions menu")
 
 ## Initial configuration
 
@@ -14,7 +14,7 @@ Navigate to the 'Dictionary' tab of /admin/settings/ and create at least one dic
 
 Once you have created one (or more) dictionaries, you can now select what dictionary is applied to your site by using the dropdown menu.
 
-![Selecting an active dictionary](/assets/images/dropdown.png "Selecting an active dictionary")
+![Selecting an active dictionary](/docs/en/images/dropdown.png "Selecting an active dictionary")
 
 Add some word-pairs to your dictionary to get started, here's an example:
 
@@ -31,13 +31,13 @@ With your dictionaries now set-up, we will take a look at how this can be used i
 
 This module provides functionality through a toolbar button and the context menu.
 
-![The toolbar icon](/assets/images/toolbar.png "The toolbar icon")
+![The toolbar icon](/docs/en/images/toolbar.png "The toolbar icon")
 
 The toolbar button will translate all applicable words within the text editor.
 
 By using the context menu, you are able to translate only selected text.
 
-![The context menu](/assets/images/context-menu.png "The context menu")
+![The context menu](/docs/en/images/context-menu.png "The context menu")
 
 In addition to this, you are able to add words to any dictionary from the context menu.
 
@@ -50,7 +50,7 @@ The last permission covers view access to dictionaries and word-pairs.
 
 The below screenshot is what is imagined to be a likely configuration for a content-author.
 
-![The permissions menu](/assets/images/permissions.png "The permissions menu")
+![The permissions menu](/docs/en/images/permissions.png "The permissions menu")
 
 ## Additional features
 
@@ -58,7 +58,7 @@ The below screenshot is what is imagined to be a likely configuration for a cont
 
 From within the settings menu, there is a toggleable Dark Theme option. This will apply globally to your site.
 
-![Light-Theme](/assets/images/light-theme.png "Light-Theme") ![Dark-Theme](/assets/images/dark-theme.png "Dark-Theme")
+![Light-Theme](/docs/en/images/light-theme.png "Light-Theme") ![Dark-Theme](/docs/en/images/dark-theme.png "Dark-Theme")
 
 ### Custom theme
 
