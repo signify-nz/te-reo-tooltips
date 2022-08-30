@@ -69,6 +69,6 @@ class DictionaryApiControllerTest extends FunctionalTest
         $this->assertArrayHasKey('ID', $data[0]);
         $this->assertArrayHasKey('Base', $data[0]);
         $this->assertArrayHasKey('Destination', $data[0]);
-        $testDict->Dictionaries->get_by_id($data[0][ID])->destroy();
+        $testDict->Dictionaries->get()->byID($data[0][ID])->destroy();
     }
 }
