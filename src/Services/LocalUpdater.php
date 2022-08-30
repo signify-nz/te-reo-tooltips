@@ -6,6 +6,7 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\SiteConfig\SiteConfig;
 use Signify\TeReoTooltips\Models\WordPair;
 use Signify\TeReoTooltips\Models\Dictionary;
+use Silverstripe\ORM\ValidationException;
 
 /**
  * LocalUpdater
@@ -51,22 +52,22 @@ class LocalUpdater implements UpdaterInterface
      * Requirements for WordPair to be valid.
      * @throws ValidationException if WordPair cannot be written to database
      */
-    public function addWordPair($Base, $Destination, $dictionaryID = null)
+    public function addWordPair($base, $destination, $dictionaryID = null)
     {
         // some validation occurs at javascript level
         // returning null will result in an error message displayed to user
         $dict = $this->checkLanguage($dictionaryID);
-        if (!$dict || !$Base || !$Destination) {
-            return null;
+        if (!$dict || !$base || !$destination) {
+            throw new Exception('Missing sufficient data to generate a wordpair');
         }
-        $pair = new WordPair();
+        $pair = WordPair::create();
         try {
-            $pair->Base = $Base;
-            $pair->Destination = $Destination;
+            $pair->Base = $base;
+            $pair->Destination = $destination;
             $pair->write();
             $dict->WordPairs()->add($pair);
-        } catch (\Throwable $th) {
-            return null;
+        } catch (\ValidationException $e) {
+            throw $e;
         }
         return $pair;
     }
