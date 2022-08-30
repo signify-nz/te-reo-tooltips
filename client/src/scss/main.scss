@@ -38,10 +38,17 @@
   color: rgba(27, 27, 27, 0.9);
 }
 
+// Admin section extra fields
 #Form_EditForm_ActiveDictionaryIDDarkTheme {
   margin-left: 0%;
 }
 
+// When no dictionaries are associated to the current site config
 #Form_EditForm_NoDictionaryWarningLabelDarkTheme {
+  margin-left: 0%;
+}
+
+// When no active dictionary is selected
+#Form_EditForm_ActiveDictionaryIDDarkThemeNoActiveDictionaryWarningLabel {
   margin-left: 0%;
 }
