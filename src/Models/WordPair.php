@@ -41,7 +41,7 @@ class WordPair extends DataObject
 
     public function canView($member = null)
     {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+        return Permission::check('TOOLTIP_VIEW_OBJECTS', 'any', $member);
     }
 
     public function canEdit($member = null)

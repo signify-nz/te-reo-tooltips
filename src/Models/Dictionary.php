@@ -44,12 +44,16 @@ class Dictionary extends DataObject
 
     public function canView($member = null)
     {
-        return Permission::check('CMS_ACCESS_CMSMain', 'any', $member);
+        return Permission::check('TOOLTIP_VIEW_OBJECTS', 'any', $member);
     }
 
     public function canEdit($member = null)
     {
-        return Permission::check('TOOLTIP_DICTIONARY_RIGHTS', 'any', $member);
+        // This check for TOOLTIP_WORDPAIR_RIGHTS enables wordpairs to be editable in the cms gridfield
+        // Inheritance of permissions prevents wordpairs from being editable unless dictionaries are also editable
+        return (Permission::check('TOOLTIP_DICTIONARY_RIGHTS', 'any', $member)
+            || Permission::check('TOOLTIP_WORDPAIR_RIGHTS', 'any', $member)
+        );
     }
 
     public function canDelete($member = null)
