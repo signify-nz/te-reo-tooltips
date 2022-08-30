@@ -7,6 +7,11 @@ use SilverStripe\SiteConfig\SiteConfig;
 use Signify\TeReoTooltips\Models\WordPair;
 use Signify\TeReoTooltips\Models\Dictionary;
 
+/**
+ * LocalUpdater
+ *
+ * Handles the addition of WordPairs to the database and binds them to Dictionary DataObjects
+ */
 class LocalUpdater implements UpdaterInterface
 {
     use Injectable;
@@ -32,19 +37,19 @@ class LocalUpdater implements UpdaterInterface
     }
 
     /**
-     * Generates a Wordpair object from parameters and associates it with a Dictionary.
+     * Generates a WordPair object from parameters and associates it with a Dictionary.
      *
-     * @param  string $Base
+     * @param  string $base
      * An untranslated word.
-     * @param  string $Destination
-     * The translation of $Base
+     * @param  string $destination
+     * The translation of $base
      * @param  int $dictionaryID
      * ID of the Dictionary object for this WordPair to be associated to.
      * Will default to currently active dictionary if no ID is provided.
      * @return WordPair
-     * If generated WordPair is invalid, returns null.
      * @link WordPair::validate()
      * Requirements for WordPair to be valid.
+     * @throws ValidationException if WordPair cannot be written to database
      */
     public function addWordPair($Base, $Destination, $dictionaryID = null)
     {

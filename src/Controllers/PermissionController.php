@@ -4,6 +4,11 @@ namespace Signify\TeReoTooltips\Controllers;
 
 use SilverStripe\Security\PermissionProvider;
 
+/**
+ * PermissionController
+ *
+ * Defines permissions for the Dictionary and WordPair DataObjects
+ */
 class PermissionController implements PermissionProvider
 {
     public function providePermissions()

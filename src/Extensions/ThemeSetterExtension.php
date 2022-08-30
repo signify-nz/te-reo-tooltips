@@ -5,6 +5,11 @@ namespace Signify\TeReoTooltips\Extensions;
 use SilverStripe\Core\Extension;
 use SilverStripe\View\Requirements;
 
+/**
+ * ThemeSetterExtension
+ *
+ * Applies CSS styling globally
+ */
 class ThemeSetterExtension extends Extension
 {
     public function onAfterInit()

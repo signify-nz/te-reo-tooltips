@@ -9,7 +9,15 @@ use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Security\Permission;
+use Signify\TeReoTooltips\Validators\WordPairValidator;
+use SilverStripe\Forms\CompositeValidator;
+use SilverStripe\ORM\ValidationResult;
 
+/**
+ * WordPair
+ *
+ * An object to define the relationship between a word and a translation of that word
+ */
 class WordPair extends DataObject
 {
 

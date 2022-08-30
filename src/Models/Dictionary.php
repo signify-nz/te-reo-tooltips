@@ -6,7 +6,13 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Forms\FormAction;
 
+/**
+ * Dictionary
+ *
+ * An object meant to hold WordPairs with a specific language scope
+ */
 class Dictionary extends DataObject
 {
 

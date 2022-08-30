@@ -6,6 +6,11 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\SiteConfig\SiteConfig;
 use Signify\TeReoTooltips\Models\Dictionary;
 
+/**
+ * LocalTranslator
+ *
+ * Translates text by wrapping applicable words in shortcodes
+ */
 class LocalTranslator implements TranslatorInterface
 {
     use Injectable;

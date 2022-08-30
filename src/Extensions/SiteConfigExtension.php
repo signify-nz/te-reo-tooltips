@@ -14,6 +14,11 @@ use Signify\TeReoTooltips\Models\Dictionary;
 use SilverStripe\Forms\LabelField;
 use SilverStripe\Security\Permission;
 
+/**
+ * SiteConfigExtension
+ *
+ * Generates a user interface for managing the Dictionary and WordPair DataObjects
+ */
 class SiteConfigExtension extends DataExtension
 {
     private static $has_many = [

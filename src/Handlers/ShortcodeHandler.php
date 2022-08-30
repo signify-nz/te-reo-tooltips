@@ -9,6 +9,11 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Core\Injector\Injectable;
 
+/**
+ * ShortcodeHandler
+ *
+ * Handles the rendering of shortcodes through a template
+ */
 class ShortcodeHandler
 {
     use Injectable;

@@ -11,6 +11,11 @@ use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
 
+/**
+ * DictionaryApiController
+ *
+ * Controls interaction with the Dictionary and WordPair objects by providing an internal API
+ */
 class DictionaryApiController extends Controller
 {
     public $translator;

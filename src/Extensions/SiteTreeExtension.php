@@ -7,6 +7,11 @@ use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\View\Requirements;
 
+/**
+ * SiteTreeExtension
+ *
+ * Provides a global means of accessing the custom theme variable
+ */
 class SiteTreeExtension extends Extension
 {
     use Configurable;
