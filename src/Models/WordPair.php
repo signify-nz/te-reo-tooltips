@@ -104,9 +104,10 @@ class WordPair extends DataObject
         return $fields;
     }
 
+    // Allows validation when additions are made from the text editor
     public function validate()
     {
-        $result = parent::validate();
+        $result = ValidationResult::create();
 
         if (
             $this->Dictionary()->WordPairs()->filter([
@@ -114,10 +115,10 @@ class WordPair extends DataObject
             'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
-            $result->addError('This base word already exists!');
+            return $result->addError('This base word already exists!');
         }
-        if (preg_match('/\s/', $this->Base)) {
-            $result->addError('A base word must be a single word only with no spaces.');
+        if (preg_match('/\s/', $this->Base) || str_contains($this->Base, '​')) {
+            return $result->addError('A base word must be a single word only with no spaces.');
         }
         return $result;
     }
