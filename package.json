@@ -2,7 +2,7 @@
   "name": "te-reo-tooltips",
   "description": "A module for quick translations.",
   "main": "./client/src/boot/index.js",
-  "author": "You",
+  "author": "Morgan Middleton",
   "engines": {
     "node": ">=10.x"
   },
