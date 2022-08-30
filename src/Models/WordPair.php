@@ -24,9 +24,12 @@ class WordPair extends DataObject
 
     private static $table_name = 'Signify_WordPair';
 
+    // Do these need to be HTMLVarchar anymore?
+    // You strip tags throughout your program but I don't think you ever use them
+    // Consider changing to Text or Varchar
     private static $db = [
-        'Base' => "HTMLVarchar",
-        'Destination' => "HTMLVarchar",
+        'Base' => 'HTMLVarchar',
+        'Destination' => 'HTMLVarchar',
     ];
 
     private static $has_one = [
