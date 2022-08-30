@@ -25,8 +25,8 @@ class LocalTranslator implements TranslatorInterface
     private function checkLanguage($dictionaryID = null)
     {
         if ($dictionaryID !== null) {
-            if (Dictionary::get_by_id($dictionaryID)) {
-                return Dictionary::get_by_id($dictionaryID);
+            if (Dictionary::get()->byID($dictionaryID)) {
+                return Dictionary::get()->byID($dictionaryID);
             }
         }
         if (SiteConfig::current_site_config()->getField('ActiveDictionary')->exists()) {
