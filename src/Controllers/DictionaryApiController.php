@@ -109,9 +109,9 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
-        $ID = $request->param('ID');
-        if (is_numeric($ID)) {
-            $dict = Dictionary::get_by_id($ID);
+        $id = $request->param('ID');
+        if (is_numeric($id)) {
+            $dict = Dictionary::get()->byID($id);
             $pairs = $dict->WordPairs();
             $pairList = [];
             foreach ($pairs as $pair) {
