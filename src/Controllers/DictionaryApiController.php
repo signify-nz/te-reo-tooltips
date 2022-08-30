@@ -142,9 +142,6 @@ class DictionaryApiController extends Controller
         };
 
         $this->getResponse()->addHeader("Content-type", "application/json");
-        $this->getResponse()->addHeader("Access-Control-Allow-Origin", Director::absoluteBaseURL());
-        $this->getResponse()->addHeader("Access-Control-Allow-Methods", "GET");
-        $this->getResponse()->addHeader("Access-Control-Allow-Headers", "x-requested-with");
 
         return $this->getResponse();
     }
