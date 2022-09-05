@@ -9,6 +9,8 @@ In the CMS, words will retain their their original form, but with a dashed under
 On the front-end, translated words will generate a tooltip that indicates their original meaning.
 The tooltips are generated dynamically on page-load, so will reflect the dictionary that is currently selected in the settings menu.
 
+See the [userguide](docs/en/userguide.md) for futher detail.
+
 ## Requirements
 
 * SilverStripe ^4.0
