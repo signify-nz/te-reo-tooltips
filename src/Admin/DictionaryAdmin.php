@@ -126,7 +126,7 @@ class DictionaryAdmin extends LeftAndMain
         $config = GridFieldConfig_RecordEditor::create();
         $grid = GridField::create(
             'Dictionary',
-            'Dictionaries Gridfield Title',
+            '',
             SiteConfig::current_site_config()->Dictionaries()
         );
 
