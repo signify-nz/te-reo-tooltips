@@ -24,12 +24,12 @@ Install via [composer](https://getcomposer.org)
 ```JSON
 
     "require": {
-        "signify-nz/te-reo-tooltips": "dev-master"
+        "signify-nz/te-reo-tooltips": "^1"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url":  "git@gitea:mmiddleton/te-reo-tooltips.git"
+            "url":  "git@github.com:signify-nz/te-reo-tooltips.git"
         }
     ]
 
