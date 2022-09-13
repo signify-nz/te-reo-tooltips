@@ -109,7 +109,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       const request = new XMLHttpRequest();
       const path = '/api/v1/dictionary/addWordPair/';
       request.open('POST', path);
-      const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+      const tokenElement = document.getElementsByName('SecurityID')[0];
       const token = tokenElement.getAttribute('value');
       request.setRequestHeader('X-SecurityID', token);
       const body = JSON.stringify({
@@ -137,7 +137,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const request = new XMLHttpRequest();
     const path = '/api/v1/dictionary/translateThroughInterface';
     request.open('POST', path, true);
-    const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+    const tokenElement = document.getElementsByName('SecurityID')[0];
     const token = tokenElement.getAttribute('value');
     request.setRequestHeader('X-SecurityID', token);
     request.onreadystatechange = function handleTranslationResponse() {
@@ -155,7 +155,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const request = new XMLHttpRequest();
     const path = `/api/v1/dictionary/dictionaries/${id}`;
     request.open('GET', path);
-    const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+    const tokenElement = document.getElementsByName('SecurityID')[0];
     const token = tokenElement.getAttribute('value');
     request.setRequestHeader('X-SecurityID', token);
     request.send();
@@ -175,7 +175,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const request = new XMLHttpRequest();
     const path = '/api/v1/dictionary/index/';
     request.open('GET', path);
-    const tokenElement = document.getElementById('Form_EditForm_SecurityID');
+    const tokenElement = document.getElementsByName('SecurityID')[0];
     const token = tokenElement.getAttribute('value');
     request.setRequestHeader('X-SecurityID', token);
     request.send();
