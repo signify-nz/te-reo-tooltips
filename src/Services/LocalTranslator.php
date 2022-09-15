@@ -88,7 +88,7 @@ class LocalTranslator implements TranslatorInterface
         foreach ($pairs as $word) {
             // /g is implicit in preg_replace.
             // regex look behind not supported in some browsers.
-            $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])/';
+            $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/';
             $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
         }
         return $text;
