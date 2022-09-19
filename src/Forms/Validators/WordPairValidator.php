@@ -20,7 +20,7 @@ class WordPairValidator extends Validator
         $result = true;
         $this->target = strip_tags($data['Base']);
         $this->filter = [
-            'Base:ExactMatch:nocase' => $this->target,
+            'Base:ExactMatch:case' => $this->target,
             'ID:ExactMatch:not' => $data['ID']
         ];
         $duplicate = Dictionary::get()->byID($data['DictionaryID'])->WordPairs()->filter($this->filter);
