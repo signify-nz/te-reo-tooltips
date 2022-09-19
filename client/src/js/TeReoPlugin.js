@@ -281,7 +281,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
             // This is likely messier than it needs to be. can it
             // handle special characters? is there any conversion?
             const selectedID = library.find(o => o.text === document.getElementById('DictionaryDisplayComboBox-inp').value).id;
-            newWordPair(document.getElementById('BaseInputTextBox').value, document.getElementById('DestinationInputTextBox').value, selectedID);
+            newWordPair(document.getElementById('BaseInputTextBox').value.replace(/[\u200B-\u200D\uFEFF]/g, ''), document.getElementById('DestinationInputTextBox').value, selectedID);
             }
         },
         { type: 'spacer', flex: 1 },
