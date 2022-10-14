@@ -120,7 +120,7 @@ class WordPair extends DataObject
         ) {
             return $result->addError('This base word already exists!');
         }
-        if (preg_match('/\s/', $this->Base) || str_contains($this->Base, '​')) {
+        if (str_contains($this->Base, '​')) {
             return $result->addError('A base word must be a single word only with no spaces.');
         }
         return $result;
