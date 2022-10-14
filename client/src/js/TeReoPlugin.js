@@ -25,6 +25,13 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     .replace(/'/g, '&#039;');
   }
 
+  function regexQuote(str) {
+    if (!str) {
+      return '';
+    }
+    return (str).replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
+  }
+
   function checkForMatches(content, shortcode = true) {
     let openTag = '';
     let closeTag = '';
@@ -38,16 +45,20 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline 1px dashed;">';
       closeTag = '</span>';
     }
-    const inputList = content.split(/\b/g);
-    const outputList = [];
-    for (let i = 0; i < inputList.length; i++) {
-      if (dictionaryMap.has(inputList[i].trim())) {
-        outputList.push(openTag + inputList[i] + closeTag);
-      } else {
-        outputList.push(inputList[i]);
-      }
-    }
-    return outputList.join('');
+    let alteredContent = content;
+    // leading and trailing slashes inserted during instantiation of regexp object
+    const openRegex = '(?<![a-zA-Z0-9])(';
+    const closeRegex = ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)';
+    console.log(`Haystack: ${content}`);
+    dictionaryMap.forEach((value, key) => {
+      const quotedKey = regexQuote(key);
+      console.log(`Needle: ${quotedKey}`);
+      const regex = new RegExp(openRegex + quotedKey + closeRegex);
+      console.log(`RegExp: ${regex}`);
+      // const regex = `/(?<![a-zA-Z0-9])(${quotedKey})(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/`;
+      alteredContent = alteredContent.replace(regex, openTag + key + closeTag);
+    });
+    return alteredContent;
   }
 
   // The value of this function over something more simple (i.e. getContent, modify, setContent)
