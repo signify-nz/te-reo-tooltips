@@ -67,7 +67,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   function treeWalk(rng) {
     const startNode = editor.selection.getNode();
     const walker = new tinymce.dom.TreeWalker(startNode);
-    let found = false;
+    let foundStartNode = false;
     let finished = false;
     let garbage;
     do {
@@ -81,27 +81,28 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         && currentNode.isEqualNode(rng.endContainer)
         && currentNode.nodeType === 3
       ) {
-        found = false;
+        foundStartNode = false;
         const result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset))
         + checkForMatches(editor.selection.getContent(), false)
         + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
         garbage = addHtmlToTextNode(currentNode, result);
       } else if (currentNode.nodeType === 3) {
-        if (currentNode.isEqualNode(rng.endContainer)) {
+        if (currentNode.isEqualNode(rng.endContainer)
+        && foundStartNode) {
           const result = checkForMatches(
           currentNode.nodeValue.substr(0, rng.endOffset), false)
           + currentNode.nodeValue.substr(rng.endOffset);
           garbage = addHtmlToTextNode(currentNode, result);
-          found = false;
+          foundStartNode = false;
           finished = true;
-        } else if (found) {
+        } else if (foundStartNode) {
           const result = checkForMatches(currentNode.nodeValue, false);
           garbage = addHtmlToTextNode(currentNode, result);
         } else if (currentNode.isEqualNode(rng.startContainer)) {
           const result = currentNode.nodeValue.substr(0, rng.startOffset)
           + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
           garbage = addHtmlToTextNode(currentNode, result);
-          found = true;
+          foundStartNode = true;
         }
       }
     } while (walker.next() && !finished);
