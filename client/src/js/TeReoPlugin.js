@@ -65,7 +65,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   // is that it circumvents tinymce's cleanup functionality which
   // will insert HTML tags when modifying a selection
   function treeWalk(rng) {
-    const startNode = editor.selection.getNode();
+    const startNode = editor.selection.getStart();
     const walker = new tinymce.dom.TreeWalker(startNode);
     let foundStartNode = false;
     let finished = false;
