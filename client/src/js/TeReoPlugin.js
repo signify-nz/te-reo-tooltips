@@ -49,13 +49,9 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     // leading and trailing slashes inserted during instantiation of regexp object
     const openRegex = '(?<![a-zA-Z0-9])(';
     const closeRegex = ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)';
-    console.log(`Haystack: ${content}`);
     dictionaryMap.forEach((value, key) => {
       const quotedKey = regexQuote(key);
-      console.log(`Needle: ${quotedKey}`);
       const regex = new RegExp(openRegex + quotedKey + closeRegex);
-      console.log(`RegExp: ${regex}`);
-      // const regex = `/(?<![a-zA-Z0-9])(${quotedKey})(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/`;
       alteredContent = alteredContent.replace(regex, openTag + key + closeTag);
     });
     return alteredContent;
