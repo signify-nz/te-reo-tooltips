@@ -33,25 +33,30 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   }
 
   function checkForMatches(content, shortcode = true) {
+    // This may no longer work with different open and close tags,
+    // the addition of regex changed things substantially
     let openTag = '';
     let closeTag = '';
+    let openRegex = '';
+    let closeRegex = '';
     if (!content) {
       return content;
     }
     if (shortcode) {
       openTag = '[TT]';
       closeTag = '[/TT]';
+      // TO-DO add regex for this instance? not currently used anywhere
     } else {
       openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline 1px dashed;">';
       closeTag = '</span>';
+      openRegex = '(?<![a-zA-Z0-9])(';
+      closeRegex = ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)';
     }
     let alteredContent = content;
     // leading and trailing slashes inserted during instantiation of regexp object
-    const openRegex = '(?<![a-zA-Z0-9])(';
-    const closeRegex = ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)';
     dictionaryMap.forEach((value, key) => {
       const quotedKey = regexQuote(key);
-      const regex = new RegExp(openRegex + quotedKey + closeRegex);
+      const regex = new RegExp(openRegex + quotedKey + closeRegex, 'i');
       alteredContent = alteredContent.replace(regex, openTag + key + closeTag);
     });
     return alteredContent;
@@ -219,10 +224,15 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const startOffset = 74;
     const endOffset = 7;
     return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline 1px dashed;">)(.+?)(<\/span>)/g, (match) => {
-      if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-        restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[/TT]`;
-      } else {
-        restoration = checkForMatches(match.slice(startOffset, match.length - endOffset));
+      restoration = match.slice(startOffset, match.length - endOffset);
+      dictionaryMap.forEach((value, key) => {
+        if (key.toLowerCase() ===
+        match.slice(startOffset, match.length - endOffset).toLowerCase()) {
+          restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[/TT]`;
+        }
+      });
+      if (!restoration) {
+        restoration = match.slice(startOffset, match.length - endOffset);
       }
       return restoration;
     });
@@ -238,21 +248,34 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline 1px dashed;">';
     const closeTag = '</span>';
     const zeroWidthSpace = '&#8203';
+    let restoration = '';
     // preceded by '[TT]', anything between, followed by '[/TT]'
     return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, (match) => {
-      if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-        return openTag
-        + match.slice(startOffset, match.length - endOffset)
-        + closeTag
-        + zeroWidthSpace;
-      }
+      const spaceInserted = match.includes(zeroWidthSpace);
       if (dictionaryMap.size === 0) {
-        return openTag
+        restoration = openTag
         + match.slice(startOffset, match.length - endOffset)
-        + closeTag
-        + zeroWidthSpace;
+        + closeTag;
+        if (!spaceInserted) {
+          restoration += zeroWidthSpace;
+        }
+        return restoration;
       }
-      return match.slice(startOffset, match.length - endOffset);
+      dictionaryMap.forEach((value, key) => {
+        if (key.toLowerCase() ===
+        match.slice(startOffset, match.length - endOffset).toLowerCase()) {
+          restoration = openTag
+          + match.slice(startOffset, match.length - endOffset)
+          + closeTag;
+          if (!spaceInserted) {
+          restoration += zeroWidthSpace;
+          }
+        }
+      });
+      if (!restoration) {
+        restoration = match.slice(startOffset, match.length - endOffset);
+      }
+      return restoration;
     });
   }
 

@@ -30,6 +30,7 @@ class WordPair extends DataObject
     private static $db = [
         'Base' => 'HTMLVarchar',
         'Destination' => 'HTMLVarchar',
+        'DestinationAlternate' => 'HTMLVarchar',
         'Sort' => 'Int',
     ];
 
@@ -102,11 +103,16 @@ class WordPair extends DataObject
         // Hidden fields are generated to pass info to the custom validator
         $third = HiddenField::create('DictionaryID', 'Dictionary ID');
         $fourth = HiddenField::create('ID', 'ID');
+        $fifth = HTMLEditorField::create('DestinationAlternate', 'Destination Language (optional)')
+        ->setEditorConfig($limitedConfig)
+        ->setDescription('Use this field if you would like to specify an alternate way of displaying a translated word. This will only be used when you translate a base word using different capitalisation.')
+        ->setRows(1);
         $fields = new FieldList([
             $first,
             $second,
             $third,
-            $fourth
+            $fourth,
+            $fifth
         ]);
 
         return $fields;
@@ -151,6 +157,7 @@ class WordPair extends DataObject
         parent::onBeforeWrite();
         $this->Base = strip_tags($this->Base);
         $this->Destination = strip_tags($this->Destination);
+        $this->DestinationAlternate = strip_tags($this->DestinationAlternate);
         $this->Sort = strlen($this->Base);
     }
 }
