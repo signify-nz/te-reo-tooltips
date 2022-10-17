@@ -30,6 +30,11 @@ class WordPair extends DataObject
     private static $db = [
         'Base' => 'HTMLVarchar',
         'Destination' => 'HTMLVarchar',
+        'Sort' => 'Int',
+    ];
+
+    private static $default_sort = [
+        'Sort ASC'
     ];
 
     private static $has_one = [
@@ -146,5 +151,6 @@ class WordPair extends DataObject
         parent::onBeforeWrite();
         $this->Base = strip_tags($this->Base);
         $this->Destination = strip_tags($this->Destination);
+        $this->Sort = strlen($this->Base);
     }
 }
