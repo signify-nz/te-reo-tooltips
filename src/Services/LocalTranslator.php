@@ -86,14 +86,44 @@ class LocalTranslator implements TranslatorInterface
         if (!$dict) {
             return $text;
         }
-        $pairs = $dict->WordPairs();
+        $pairs = $dict->WordPairs()->sort()->reverse();
+        // encode here to prevent collisions with existing translations
+        $text = $this->encodeToHex($text);
+
         foreach ($pairs as $word) {
             // /g is implicit in preg_replace.
             // regex look behind not supported in some browsers.
             // Need to use preg_replace_callback to preserve capitalisation
             $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/i';
-            $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
+            // $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
+            $text = preg_replace_callback($regex, function ($matches) {
+                    return "[TT]".bin2hex($matches[0])."[/TT]";
+            },
+            $text);
         }
+
+        $text = $this->decodeFromHex($text);
+
+        return $text;
+    }
+
+    private function encodeToHex($text){
+        $regex = '/(\[TT]).*?(\[\/TT])/';
+        $text = preg_replace_callback($regex, function ($matches) {
+                $encodedMatch = bin2hex(substr($matches[0], 4, strlen($matches[0])-9));
+                return '[TT]'.$encodedMatch.'[/TT]';
+            },
+        $text);
+        return $text;
+    }
+
+    private function decodeFromHex($text){
+        $regex = '/(\[TT]).*?(\[\/TT])/';
+        $text = preg_replace_callback($regex, function ($matches) {
+                $decodedMatch = hex2bin(substr($matches[0], 4, strlen($matches[0])-9));
+                return '[TT]'.$decodedMatch.'[/TT]';
+            },
+        $text);
         return $text;
     }
 }
