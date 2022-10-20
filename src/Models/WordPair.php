@@ -130,10 +130,13 @@ class WordPair extends DataObject
             'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
-            return $result->addError('This base word already exists!');
+            return $result->addError('This base word/phrase already exists!');
         }
-        if (str_contains($this->Base, '​')) {
-            return $result->addError('A base word must be a single word only with no spaces.');
+        if (str_contains($this->Base, '​') || str_contains($this->Base, PHP_EOL))) {
+            return $result->addError('A base word/phrase not contain any new lines or abnormal spaces.');
+        }
+        if (strlen($this->Base) > 50) {
+            return $result->addError('A base word/phrase is limited to 50 characters.');
         }
         return $result;
     }
