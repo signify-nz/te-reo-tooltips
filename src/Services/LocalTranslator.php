@@ -95,7 +95,6 @@ class LocalTranslator implements TranslatorInterface
             // regex look behind not supported in some browsers.
             // Need to use preg_replace_callback to preserve capitalisation
             $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/i';
-            // $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
             $text = preg_replace_callback($regex, function ($matches) {
                     return "[TT]".bin2hex($matches[0])."[/TT]";
             },
@@ -107,6 +106,15 @@ class LocalTranslator implements TranslatorInterface
         return $text;
     }
 
+    /**
+     * Searches a string for text within the shortcode [TT]...[/TT],
+     * returns the input string with matches encoded as a hexadecimal
+     *
+     * @param  string $text
+     * The text to be searched for matches
+     * @return string
+     * The input text with matches encoded as hexadecimal strings
+     */
     private function encodeToHex($text){
         $regex = '/(\[TT]).*?(\[\/TT])/';
         $text = preg_replace_callback($regex, function ($matches) {
@@ -117,6 +125,15 @@ class LocalTranslator implements TranslatorInterface
         return $text;
     }
 
+    /**
+     * Searches a string for text within the shortcode [TT]...[/TT],
+     * returns the input string with matches decoded from hexadecimal
+     *
+     * @param  string $text
+     * The text to be searched for matches
+     * @return string
+     * The input text with matches decoded to plain text
+     */
     private function decodeFromHex($text){
         $regex = '/(\[TT]).*?(\[\/TT])/';
         $text = preg_replace_callback($regex, function ($matches) {
