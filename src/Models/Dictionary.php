@@ -15,7 +15,6 @@ use SilverStripe\Forms\FormAction;
  */
 class Dictionary extends DataObject
 {
-
     private static $db = [
         'Title' => 'Varchar',
         'SourceLanguage' => 'Varchar',

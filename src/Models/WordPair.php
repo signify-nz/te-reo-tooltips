@@ -21,7 +21,6 @@ use SilverStripe\ORM\ValidationResult;
  */
 class WordPair extends DataObject
 {
-
     private static $table_name = 'Signify_WordPair';
 
     // Do these need to be HTMLVarchar anymore?
@@ -106,7 +105,8 @@ class WordPair extends DataObject
         $fourth = HiddenField::create('ID', 'ID');
         $fifth = HTMLEditorField::create('DestinationAlternate', 'Destination Language (optional)')
         ->setEditorConfig($limitedConfig)
-        ->setDescription('Use this field if you would like to specify an alternate way of displaying a translated word. This will only be used when you translate a base word using different capitalisation.')
+        ->setDescription('Use this field if you would like to specify an alternate way of displaying a translated word.
+        This will only be used when you translate a base word using different capitalisation.')
         ->setRows(1);
         $fields = new FieldList([
             $first,
@@ -132,7 +132,7 @@ class WordPair extends DataObject
         ) {
             return $result->addError('This base word/phrase already exists!');
         }
-        if (str_contains($this->Base, '​') || str_contains($this->Base, PHP_EOL))) {
+        if (str_contains($this->Base, '​') || str_contains($this->Base, PHP_EOL)) {
             return $result->addError('A base word/phrase not contain any new lines or abnormal spaces.');
         }
         if (strlen($this->Base) > 50) {

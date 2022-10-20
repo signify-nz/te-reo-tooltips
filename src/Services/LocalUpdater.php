@@ -58,7 +58,6 @@ class LocalUpdater implements UpdaterInterface
     {
         // some validation occurs at javascript level
         // returning null will result in an error message displayed to user
-        echo 'test';
         $dict = $this->checkLanguage($dictionaryID);
         if (!$dict || !$base || !$destination) {
             throw new Exception('Missing sufficient data to generate a wordpair');
