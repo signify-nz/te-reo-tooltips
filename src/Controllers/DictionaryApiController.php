@@ -114,7 +114,7 @@ class DictionaryApiController extends Controller
         $id = $request->param('ID');
         if (is_numeric($id)) {
             $dict = Dictionary::get()->byID($id);
-            $pairs = $dict->WordPairs();
+            $pairs = $dict->WordPairs()->sort()->reverse();
             $pairList = [];
             foreach ($pairs as $pair) {
                 array_push($pairList, [
@@ -128,7 +128,7 @@ class DictionaryApiController extends Controller
         } else {
             //this needs to handle the event where no such dictionary exists
             $dict = SiteConfig::current_site_config()->getField('ActiveDictionary');
-            $pairs = $dict->WordPairs();
+            $pairs = $dict->WordPairs()->sort()->reverse();
             $pairList = [];
             foreach ($pairs as $pair) {
                 array_push($pairList, [
