@@ -33,13 +33,11 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   }
 
   function encode(str) {
-    // console.log(`encodeMatch: ${str}`);
     let encodedString = '-%-%-';
     for (let i = 0; i < str.length; i++) {
       encodedString += `${str.codePointAt(i)}-`;
     }
     encodedString += '%-%-';
-    // console.log(`encodedMatch: ${encodedString}`);
     return encodedString;
   }
 
@@ -82,10 +80,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       alteredContent = alteredContent.replace(regex, openTag + encode(key) + closeTag);
     });
     const regexDecode = new RegExp('(-%-%-).*?(-%-%-)', 'gi');
-    alteredContent = alteredContent.replace(regexDecode, (match) => {
-      decode(match);
-    }
-    );
+    alteredContent = alteredContent.replace(regexDecode, (match) => decode(match));
     return alteredContent;
   }
 
