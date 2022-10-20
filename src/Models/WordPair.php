@@ -45,6 +45,7 @@ class WordPair extends DataObject
     private static $summary_fields = [
         'Base' => 'Base Language',
         'Destination' => 'Destination Language',
+        'DestinationAlternate' => 'Alternate Translation',
     ];
 
     private static $api_access = true;

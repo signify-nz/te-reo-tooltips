@@ -138,7 +138,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     editor.selection.moveToBookmark(bookmark);
   }
 
-  function newWordPair(base, destination, id) {
+  function newWordPair(base, destination, destinationAlternate, id) {
     if (!base || !destination) {
       tinymce.activeEditor.windowManager.alert('Cannot submit an empty field!');
     } else if (dictionaryMap.has(base)) {
@@ -153,14 +153,19 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       const body = JSON.stringify({
         dictionaryID: id,
         baseWord: base,
-        destinationWord: destination
+        destinationWord: destination,
+        destinationAlternateWord: destinationAlternate
       });
       request.send(body);
       request.onreadystatechange = function handleUpdateResponse() {
         if (this.readyState === 4 && this.status === 200) {
           dictionaryMap.set(base, destination);
           tinymce.activeEditor.windowManager.close();
-          tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
+          if (destinationAlternate) {
+            tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}", "${destinationAlternate}".`);
+          } else {
+            tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
+          }
         }
         if (this.readyState === 4 && this.status === 400) {
           tinymce.activeEditor.windowManager.alert(this.response);
@@ -337,7 +342,8 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
             // This is likely messier than it needs to be. can it
             // handle special characters? is there any conversion?
             const selectedID = library.find(o => o.text === document.getElementById('DictionaryDisplayComboBox-inp').value).id;
-            newWordPair(document.getElementById('BaseInputTextBox').value.replace(/[\u200B-\u200D\uFEFF]/g, ''), document.getElementById('DestinationInputTextBox').value, selectedID);
+            const alternateDest = document.getElementById('DestinationAlternateInputTextBox').value ? document.getElementById('DestinationAlternateInputTextBox').value : '';
+            newWordPair(document.getElementById('BaseInputTextBox').value.replace(/[\u200B-\u200D\uFEFF]/g, ''), document.getElementById('DestinationInputTextBox').value, alternateDest, selectedID);
             }
         },
         { type: 'spacer', flex: 1 },
@@ -349,8 +355,9 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         labelGap: 30,
         spacing: 10,
         items: [
-          { type: 'textbox', name: 'Base', size: 40, label: 'Base', value: selection.trim(), id: 'BaseInputTextBox', tooltip: 'An untranslated word' },
-          { type: 'textbox', name: 'Destination', size: 40, label: 'Translation', id: 'DestinationInputTextBox', tooltip: 'A translated word' },
+          { type: 'textbox', name: 'Base', size: 40, label: 'Base', value: selection.trim(), id: 'BaseInputTextBox', tooltip: 'An untranslated word/phrase' },
+          { type: 'textbox', name: 'Destination', size: 40, label: 'Translation', id: 'DestinationInputTextBox', tooltip: 'A translated word/phrase' },
+          { type: 'textbox', name: 'DestinationAlternate', size: 40, label: 'Alternate Translation', id: 'DestinationAlternateInputTextBox', tooltip: 'An alternate translated word/phrase' },
           {
             type: 'combobox',
             name: 'Dictionary',

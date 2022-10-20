@@ -190,9 +190,10 @@ class DictionaryApiController extends Controller
         $body = json_decode($request->getBody(), true);
         $base = $body['baseWord'];
         $destination = $body['destinationWord'];
+        $destinationAlternate = $body['destinationAlternateWord'] ?? '';
         $id = $body['dictionaryID'];
         try {
-            $newPair = $this->updater->addWordPair($base, $destination, $id);
+            $newPair = $this->updater->addWordPair($base, $destination, $destinationAlternate, $id);
         } catch (\Exception $e) {
             $this->setResponse(new HTTPResponse($e->getMessage(), 400));
             return $this->getResponse();
@@ -200,7 +201,8 @@ class DictionaryApiController extends Controller
         $response = [
             'ID' => $newPair->ID,
             'Base' => $newPair->Base,
-            'Destination' => $newPair->Destination
+            'Destination' => $newPair->Destination,
+            'DestinationAlternate' => $newPair->DestinationAlternate ?? ''
         ];
         $response = json_encode($response);
         $this->getResponse()->setBody($response);
