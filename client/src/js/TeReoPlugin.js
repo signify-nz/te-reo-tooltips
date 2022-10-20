@@ -32,6 +32,27 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     return (str).replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
   }
 
+  function encode(str) {
+    // console.log(`encodeMatch: ${str}`);
+    let encodedString = '-%-%-';
+    for (let i = 0; i < str.length; i++) {
+      encodedString += `${str.codePointAt(i)}-`;
+    }
+    encodedString += '%-%-';
+    // console.log(`encodedMatch: ${encodedString}`);
+    return encodedString;
+  }
+
+  function decode(str) {
+    let splitString = str.split('-%-%-').filter(Boolean);
+    splitString = splitString[0].split('-');
+    const decodedStr = [];
+    for (let i = 0; i < splitString.length; i++) {
+    decodedStr[i] = String.fromCodePoint(splitString[i]);
+    }
+    return decodedStr.join('');
+  }
+
   function checkForMatches(content, shortcode = true) {
     // This may no longer work with different open and close tags,
     // the addition of regex changed things substantially
@@ -53,12 +74,18 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       closeRegex = ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)';
     }
     let alteredContent = content;
+
     // leading and trailing slashes inserted during instantiation of regexp object
     dictionaryMap.forEach((value, key) => {
       const quotedKey = regexQuote(key);
-      const regex = new RegExp(openRegex + quotedKey + closeRegex, 'i');
-      alteredContent = alteredContent.replace(regex, openTag + key + closeTag);
+      const regex = new RegExp(openRegex + quotedKey + closeRegex, 'gi');
+      alteredContent = alteredContent.replace(regex, openTag + encode(key) + closeTag);
     });
+    const regexDecode = new RegExp('(-%-%-).*?(-%-%-)', 'gi');
+    alteredContent = alteredContent.replace(regexDecode, (match) => {
+      decode(match);
+    }
+    );
     return alteredContent;
   }
 
@@ -66,7 +93,10 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   // is that it circumvents tinymce's cleanup functionality which
   // will insert HTML tags when modifying a selection
   function treeWalk(rng) {
-    const startNode = editor.selection.getStart();
+    let startNode = editor.selection.getNode();
+    if (startNode.nodeType === 1) {
+      startNode = startNode.firstChild;
+    }
     const walker = new tinymce.dom.TreeWalker(startNode);
     let foundStartNode = false;
     let finished = false;
