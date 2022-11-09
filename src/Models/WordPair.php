@@ -96,17 +96,18 @@ class WordPair extends DataObject
         $limitedConfig->setOption('valid_elements', '');
         $first = HTMLEditorField::create('Base', 'Base Language')
             ->setEditorConfig($limitedConfig)
-            ->setRows(1);
+            ->setRows(1)
+            ->setDescription('Use this field for an untranslated word, typically upper-case e.g. \'Help\'');
         $second = HTMLEditorField::create('Destination', 'Destination Language')
             ->setEditorConfig($limitedConfig)
-            ->setRows(1);
+            ->setRows(1)
+            ->setDescription('Use this field for the upper-case version of your translation e.g. \'Āwhina\'');
         // Hidden fields are generated to pass info to the custom validator
         $third = HiddenField::create('DictionaryID', 'Dictionary ID');
         $fourth = HiddenField::create('ID', 'ID');
         $fifth = HTMLEditorField::create('DestinationAlternate', 'Destination Language (optional)')
         ->setEditorConfig($limitedConfig)
-        ->setDescription('Use this field if you would like to specify an alternate way of displaying a translated word.
-        This will only be used when you translate a base word using different capitalisation.')
+        ->setDescription('Use this field for the lower-case version of your translation e.g. \'āwhina\'')
         ->setRows(1);
         $fields = new FieldList([
             $first,
