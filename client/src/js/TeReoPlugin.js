@@ -73,7 +73,9 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     }
     let alteredContent = content;
 
-    // leading and trailing slashes inserted during instantiation of regexp object
+    // Leading and trailing slashes inserted during instantiation of regexp object.
+    // We iterate through the target text and encode any words that have already
+    // been translated, this helps to prevent collisions.
     dictionaryMap.forEach((value, key) => {
       const quotedKey = regexQuote(key);
       const regex = new RegExp(openRegex + quotedKey + closeRegex, 'gi');
