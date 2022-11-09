@@ -77,7 +77,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     dictionaryMap.forEach((value, key) => {
       const quotedKey = regexQuote(key);
       const regex = new RegExp(openRegex + quotedKey + closeRegex, 'gi');
-      alteredContent = alteredContent.replace(regex, openTag + encode(key) + closeTag);
+      alteredContent = alteredContent.replace(regex, (match) => openTag + encode(match) + closeTag);
     });
     const regexDecode = new RegExp('(-%-%-).*?(-%-%-)', 'gi');
     alteredContent = alteredContent.replace(regexDecode, (match) => decode(match));
