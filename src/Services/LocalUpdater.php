@@ -44,6 +44,8 @@ class LocalUpdater implements UpdaterInterface
      * An untranslated word.
      * @param  string $destination
      * The translation of $base
+     * @param  string $destinationAlternate
+     * An optional alternate translation
      * @param  int $dictionaryID
      * ID of the Dictionary object for this WordPair to be associated to.
      * Will default to currently active dictionary if no ID is provided.
@@ -52,7 +54,7 @@ class LocalUpdater implements UpdaterInterface
      * Requirements for WordPair to be valid.
      * @throws ValidationException if WordPair cannot be written to database
      */
-    public function addWordPair($base, $destination, $dictionaryID = null)
+    public function addWordPair($base, $destination, $destinationAlternate = null, $dictionaryID = null)
     {
         // some validation occurs at javascript level
         // returning null will result in an error message displayed to user
@@ -64,6 +66,9 @@ class LocalUpdater implements UpdaterInterface
         try {
             $pair->Base = $base;
             $pair->Destination = $destination;
+            if ($destinationAlternate) {
+                $pair->DestinationAlternate = $destinationAlternate;
+            };
             $pair->write();
             $dict->WordPairs()->add($pair);
         } catch (\ValidationException $e) {

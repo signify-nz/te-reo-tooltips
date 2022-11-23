@@ -58,6 +58,8 @@ class LocalTranslator implements TranslatorInterface
         foreach ($pairList as $pair) {
             if ($text === $pair->getField('Base')) {
                 return $pair->getField("Destination");
+            } elseif (strcasecmp($text, $pair->getField('Base')) == 0) {
+                return $pair->getField("DestinationAlternate") ?? $pair->getField("Destination");
             }
         }
         return null;
@@ -84,13 +86,65 @@ class LocalTranslator implements TranslatorInterface
         if (!$dict) {
             return $text;
         }
-        $pairs = $dict->WordPairs();
+        $pairs = $dict->WordPairs()->sort()->reverse();
+        // encode here to prevent collisions with existing translations
+        $text = $this->encodeToHex($text);
+
         foreach ($pairs as $word) {
             // /g is implicit in preg_replace.
             // regex look behind not supported in some browsers.
-            $regex = '/(?<![a-zA-Z0-9])(' . preg_quote($word->getField("Base")) . ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/';
-            $text = preg_replace($regex, "[TT]" . $word->getField('Base') . "[/TT]", $text);
+            // Need to use preg_replace_callback to preserve capitalisation
+            $regex = '/(?<![a-zA-Z0-9])('
+            . preg_quote($word->getField("Base"))
+            . ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)/i';
+            $text = preg_replace_callback($regex, function ($matches) {
+                    return "[TT]" . bin2hex($matches[0]) . "[/TT]";
+            },
+            $text);
         }
+
+        $text = $this->decodeFromHex($text);
+
+        return $text;
+    }
+
+    /**
+     * Searches a string for text within the shortcode [TT]...[/TT],
+     * returns the input string with matches encoded as a hexadecimal
+     *
+     * @param  string $text
+     * The text to be searched for matches
+     * @return string
+     * The input text with matches encoded as hexadecimal strings
+     */
+    private function encodeToHex($text)
+    {
+        $regex = '/(\[TT]).*?(\[\/TT])/';
+        $text = preg_replace_callback($regex, function ($matches) {
+                $encodedMatch = bin2hex(substr($matches[0], 4, strlen($matches[0]) - 9));
+                return '[TT]' . $encodedMatch . '[/TT]';
+        },
+        $text);
+        return $text;
+    }
+
+    /**
+     * Searches a string for text within the shortcode [TT]...[/TT],
+     * returns the input string with matches decoded from hexadecimal
+     *
+     * @param  string $text
+     * The text to be searched for matches
+     * @return string
+     * The input text with matches decoded to plain text
+     */
+    private function decodeFromHex($text)
+    {
+        $regex = '/(\[TT]).*?(\[\/TT])/';
+        $text = preg_replace_callback($regex, function ($matches) {
+                $decodedMatch = hex2bin(substr($matches[0], 4, strlen($matches[0]) - 9));
+                return '[TT]' . $decodedMatch . '[/TT]';
+        },
+        $text);
         return $text;
     }
 }

@@ -20,5 +20,5 @@ interface UpdaterInterface
      * A reference to the associated language or dictionary.
      * @return WordPair
      */
-    public function addWordPair($base, $destination, $languageID);
+    public function addWordPair($base, $destination, $destinationAlternate, $languageID);
 }

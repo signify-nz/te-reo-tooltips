@@ -35,7 +35,7 @@ class WordPairValidator extends Validator
                 'bad'
             );
         };
-        if (preg_match('/\s/', $data['Base']) || str_contains($data['Base'], '​')) {
+        if (str_contains($data['Base'], '​')) {
             $result = false;
             $this->validationError(
                 'Base',

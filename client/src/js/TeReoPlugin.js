@@ -25,38 +25,77 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     .replace(/'/g, '&#039;');
   }
 
+  function regexQuote(str) {
+    if (!str) {
+      return '';
+    }
+    return (str).replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
+  }
+
+  function encode(str) {
+    let encodedString = '-%-%-';
+    for (let i = 0; i < str.length; i++) {
+      encodedString += `${str.codePointAt(i)}-`;
+    }
+    encodedString += '%-%-';
+    return encodedString;
+  }
+
+  function decode(str) {
+    let splitString = str.split('-%-%-').filter(Boolean);
+    splitString = splitString[0].split('-');
+    const decodedStr = [];
+    for (let i = 0; i < splitString.length; i++) {
+    decodedStr[i] = String.fromCodePoint(splitString[i]);
+    }
+    return decodedStr.join('');
+  }
+
   function checkForMatches(content, shortcode = true) {
+    // This may no longer work with different open and close tags,
+    // the addition of regex changed things substantially
     let openTag = '';
     let closeTag = '';
+    let openRegex = '';
+    let closeRegex = '';
     if (!content) {
       return content;
     }
     if (shortcode) {
       openTag = '[TT]';
       closeTag = '[/TT]';
+      // TO-DO add regex for this instance? not currently used anywhere
     } else {
       openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline 1px dashed;">';
       closeTag = '</span>';
+      openRegex = '(?<![a-zA-Z0-9])(';
+      closeRegex = ')(?!\[\/TT])(?![a-zA-Z0-9])(?![^<]*\>)';
     }
-    const inputList = content.split(/\b/g);
-    const outputList = [];
-    for (let i = 0; i < inputList.length; i++) {
-      if (dictionaryMap.has(inputList[i].trim())) {
-        outputList.push(openTag + inputList[i] + closeTag);
-      } else {
-        outputList.push(inputList[i]);
-      }
-    }
-    return outputList.join('');
+    let alteredContent = content;
+
+    // Leading and trailing slashes inserted during instantiation of regexp object.
+    // We iterate through the target text and encode any words that have already
+    // been translated, this helps to prevent collisions.
+    dictionaryMap.forEach((value, key) => {
+      const quotedKey = regexQuote(key);
+      const regex = new RegExp(openRegex + quotedKey + closeRegex, 'gi');
+      alteredContent = alteredContent.replace(regex, (match) => openTag + encode(match) + closeTag);
+    });
+    const regexDecode = new RegExp('(-%-%-).*?(-%-%-)', 'gi');
+    alteredContent = alteredContent.replace(regexDecode, (match) => decode(match));
+    return alteredContent;
   }
 
   // The value of this function over something more simple (i.e. getContent, modify, setContent)
   // is that it circumvents tinymce's cleanup functionality which
   // will insert HTML tags when modifying a selection
   function treeWalk(rng) {
-    const startNode = editor.selection.getNode();
+    let startNode = editor.selection.getNode();
+    if (startNode.nodeType === 1) {
+      startNode = startNode.firstChild;
+    }
     const walker = new tinymce.dom.TreeWalker(startNode);
-    let found = false;
+    let foundStartNode = false;
     let finished = false;
     let garbage;
     do {
@@ -70,27 +109,28 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         && currentNode.isEqualNode(rng.endContainer)
         && currentNode.nodeType === 3
       ) {
-        found = false;
+        foundStartNode = false;
         const result = escapeHtml(currentNode.nodeValue.substr(0, rng.startOffset))
         + checkForMatches(editor.selection.getContent(), false)
         + escapeHtml(currentNode.nodeValue.substr(rng.endOffset));
         garbage = addHtmlToTextNode(currentNode, result);
       } else if (currentNode.nodeType === 3) {
-        if (currentNode.isEqualNode(rng.endContainer)) {
+        if (currentNode.isEqualNode(rng.endContainer)
+        && foundStartNode) {
           const result = checkForMatches(
           currentNode.nodeValue.substr(0, rng.endOffset), false)
           + currentNode.nodeValue.substr(rng.endOffset);
           garbage = addHtmlToTextNode(currentNode, result);
-          found = false;
+          foundStartNode = false;
           finished = true;
-        } else if (found) {
+        } else if (foundStartNode) {
           const result = checkForMatches(currentNode.nodeValue, false);
           garbage = addHtmlToTextNode(currentNode, result);
         } else if (currentNode.isEqualNode(rng.startContainer)) {
           const result = currentNode.nodeValue.substr(0, rng.startOffset)
           + checkForMatches(currentNode.nodeValue.substr(rng.startOffset), false);
           garbage = addHtmlToTextNode(currentNode, result);
-          found = true;
+          foundStartNode = true;
         }
       }
     } while (walker.next() && !finished);
@@ -100,7 +140,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     editor.selection.moveToBookmark(bookmark);
   }
 
-  function newWordPair(base, destination, id) {
+  function newWordPair(base, destination, destinationAlternate, id) {
     if (!base || !destination) {
       tinymce.activeEditor.windowManager.alert('Cannot submit an empty field!');
     } else if (dictionaryMap.has(base)) {
@@ -115,14 +155,19 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       const body = JSON.stringify({
         dictionaryID: id,
         baseWord: base,
-        destinationWord: destination
+        destinationWord: destination,
+        destinationAlternateWord: destinationAlternate
       });
       request.send(body);
       request.onreadystatechange = function handleUpdateResponse() {
         if (this.readyState === 4 && this.status === 200) {
           dictionaryMap.set(base, destination);
           tinymce.activeEditor.windowManager.close();
-          tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
+          if (destinationAlternate) {
+            tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}", "${destinationAlternate}".`);
+          } else {
+            tinymce.activeEditor.windowManager.alert(`Successfully added wordpair "${base}", "${destination}".`);
+          }
         }
         if (this.readyState === 4 && this.status === 400) {
           tinymce.activeEditor.windowManager.alert(this.response);
@@ -211,10 +256,15 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const startOffset = 74;
     const endOffset = 7;
     return content.replace(/(<span class="TeReoTooltip" style="text-decoration: underline 1px dashed;">)(.+?)(<\/span>)/g, (match) => {
-      if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-        restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[/TT]`;
-      } else {
-        restoration = checkForMatches(match.slice(startOffset, match.length - endOffset));
+      restoration = match.slice(startOffset, match.length - endOffset);
+      dictionaryMap.forEach((value, key) => {
+        if (key.toLowerCase() ===
+        match.slice(startOffset, match.length - endOffset).toLowerCase()) {
+          restoration = `[TT]${match.slice(startOffset, match.length - endOffset)}[/TT]`;
+        }
+      });
+      if (!restoration) {
+        restoration = match.slice(startOffset, match.length - endOffset);
       }
       return restoration;
     });
@@ -230,21 +280,34 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const openTag = '<span class=\"TeReoTooltip\" style="text-decoration: underline 1px dashed;">';
     const closeTag = '</span>';
     const zeroWidthSpace = '&#8203';
+    let restoration = '';
     // preceded by '[TT]', anything between, followed by '[/TT]'
     return content.replace(/\[TT([^\]]*)\]([^\]]*)\[\/TT\]/g, (match) => {
-      if (dictionaryMap.has(match.slice(startOffset, match.length - endOffset))) {
-        return openTag
-        + match.slice(startOffset, match.length - endOffset)
-        + closeTag
-        + zeroWidthSpace;
-      }
+      const spaceInserted = match.includes(zeroWidthSpace);
       if (dictionaryMap.size === 0) {
-        return openTag
+        restoration = openTag
         + match.slice(startOffset, match.length - endOffset)
-        + closeTag
-        + zeroWidthSpace;
+        + closeTag;
+        if (!spaceInserted) {
+          restoration += zeroWidthSpace;
+        }
+        return restoration;
       }
-      return match.slice(startOffset, match.length - endOffset);
+      dictionaryMap.forEach((value, key) => {
+        if (key.toLowerCase() ===
+        match.slice(startOffset, match.length - endOffset).toLowerCase()) {
+          restoration = openTag
+          + match.slice(startOffset, match.length - endOffset)
+          + closeTag;
+          if (!spaceInserted) {
+          restoration += zeroWidthSpace;
+          }
+        }
+      });
+      if (!restoration) {
+        restoration = match.slice(startOffset, match.length - endOffset);
+      }
+      return restoration;
     });
   }
 
@@ -281,7 +344,8 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
             // This is likely messier than it needs to be. can it
             // handle special characters? is there any conversion?
             const selectedID = library.find(o => o.text === document.getElementById('DictionaryDisplayComboBox-inp').value).id;
-            newWordPair(document.getElementById('BaseInputTextBox').value.replace(/[\u200B-\u200D\uFEFF]/g, ''), document.getElementById('DestinationInputTextBox').value, selectedID);
+            const alternateDest = document.getElementById('DestinationAlternateInputTextBox').value ? document.getElementById('DestinationAlternateInputTextBox').value : '';
+            newWordPair(document.getElementById('BaseInputTextBox').value.replace(/[\u200B-\u200D\uFEFF]/g, ''), document.getElementById('DestinationInputTextBox').value, alternateDest, selectedID);
             }
         },
         { type: 'spacer', flex: 1 },
@@ -293,8 +357,9 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
         labelGap: 30,
         spacing: 10,
         items: [
-          { type: 'textbox', name: 'Base', size: 40, label: 'Base', value: selection.trim(), id: 'BaseInputTextBox', tooltip: 'An untranslated word' },
-          { type: 'textbox', name: 'Destination', size: 40, label: 'Translation', id: 'DestinationInputTextBox', tooltip: 'A translated word' },
+          { type: 'textbox', name: 'Base', size: 40, label: 'Base', value: selection.trim(), id: 'BaseInputTextBox', tooltip: 'An untranslated word/phrase' },
+          { type: 'textbox', name: 'Destination', size: 40, label: 'Translation', id: 'DestinationInputTextBox', tooltip: 'A translated word/phrase' },
+          { type: 'textbox', name: 'DestinationAlternate', size: 40, label: 'Alternate Translation', id: 'DestinationAlternateInputTextBox', tooltip: 'An alternate translated word/phrase' },
           {
             type: 'combobox',
             name: 'Dictionary',

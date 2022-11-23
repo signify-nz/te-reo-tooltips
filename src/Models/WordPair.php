@@ -21,7 +21,6 @@ use SilverStripe\ORM\ValidationResult;
  */
 class WordPair extends DataObject
 {
-
     private static $table_name = 'Signify_WordPair';
 
     // Do these need to be HTMLVarchar anymore?
@@ -30,6 +29,12 @@ class WordPair extends DataObject
     private static $db = [
         'Base' => 'HTMLVarchar',
         'Destination' => 'HTMLVarchar',
+        'DestinationAlternate' => 'HTMLVarchar',
+        'Sort' => 'Int',
+    ];
+
+    private static $default_sort = [
+        'Sort ASC'
     ];
 
     private static $has_one = [
@@ -39,6 +44,7 @@ class WordPair extends DataObject
     private static $summary_fields = [
         'Base' => 'Base Language',
         'Destination' => 'Destination Language',
+        'DestinationAlternate' => 'Alternate Translation',
     ];
 
     private static $api_access = true;
@@ -90,18 +96,25 @@ class WordPair extends DataObject
         $limitedConfig->setOption('valid_elements', '');
         $first = HTMLEditorField::create('Base', 'Base Language')
             ->setEditorConfig($limitedConfig)
-            ->setRows(1);
+            ->setRows(1)
+            ->setDescription('Use this field for an untranslated word, typically upper-case e.g. \'Help\'');
         $second = HTMLEditorField::create('Destination', 'Destination Language')
             ->setEditorConfig($limitedConfig)
-            ->setRows(1);
+            ->setRows(1)
+            ->setDescription('Use this field for the upper-case version of your translation e.g. \'Āwhina\'');
         // Hidden fields are generated to pass info to the custom validator
         $third = HiddenField::create('DictionaryID', 'Dictionary ID');
         $fourth = HiddenField::create('ID', 'ID');
+        $fifth = HTMLEditorField::create('DestinationAlternate', 'Destination Language (optional)')
+        ->setEditorConfig($limitedConfig)
+        ->setDescription('Use this field for the lower-case version of your translation e.g. \'āwhina\'')
+        ->setRows(1);
         $fields = new FieldList([
             $first,
             $second,
             $third,
-            $fourth
+            $fourth,
+            $fifth
         ]);
 
         return $fields;
@@ -118,10 +131,13 @@ class WordPair extends DataObject
             'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
-            return $result->addError('This base word already exists!');
+            return $result->addError('This base word/phrase already exists!');
         }
-        if (preg_match('/\s/', $this->Base) || str_contains($this->Base, '​')) {
-            return $result->addError('A base word must be a single word only with no spaces.');
+        if (str_contains($this->Base, '​') || str_contains($this->Base, PHP_EOL)) {
+            return $result->addError('A base word/phrase not contain any new lines or abnormal spaces.');
+        }
+        if (strlen(strip_tags($this->Base)) > 50) {
+            return $result->addError('A base word/phrase is limited to 50 characters.');
         }
         return $result;
     }
@@ -146,5 +162,7 @@ class WordPair extends DataObject
         parent::onBeforeWrite();
         $this->Base = strip_tags($this->Base);
         $this->Destination = strip_tags($this->Destination);
+        $this->DestinationAlternate = strip_tags($this->DestinationAlternate);
+        $this->Sort = strlen($this->Base);
     }
 }
