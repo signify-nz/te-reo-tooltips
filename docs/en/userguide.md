@@ -21,13 +21,11 @@ Add some word-pairs to your dictionary to get started, here's an example:
 - Base word - Hello
 - Destination word - Kia ora
 
-It is important here to note the limitations on these word-pairs, a base word must be a single word containing only alphanumeric characters.
-
-In addition to this, duplicate base-words cannot exist within a dictionary.
+Note that duplicate base-words cannot exist within a dictionary.
 
 ## In the text editor
 
-With your dictionaries now set-up, we will take a look at how this can be used in the text-editor.
+With your dictionaries now set up, we will take a look at how this can be used in the text-editor.
 
 This module provides functionality through a toolbar button and the context menu.
 
@@ -86,3 +84,7 @@ If no translation for a word exists the in the new dictionary, the original untr
 This application likes to stay tidy, and as such it will try to remove any translations that it thinks are invalid. If you publish a page with words that no longer have a translation, either due to deleting the word-pair or changing the dictionary, those translations will be removed from the editor.
 
 For this reason, we highly recommend matching your translations across all dictionaries e.g. if your 'English-to-Maori' dictionary contains a translation for 'Hello', then your 'English-to-Spanish' dictionary should also contain a translation for 'Hello'. This allows switching between dictionaries with minimal flow-on-effects and keeps your content tidy.
+
+### Alternative uses
+
+As dictionaries are created solely from user defined content, this module could be used to provide definitions of words rather than translations.

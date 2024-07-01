@@ -1,6 +1,6 @@
 {
     "name": "signify-nz/te-reo-tooltips",
-    "description": "A module for quick translations.",
+    "description": "A module for adding tooltips to wysiwyg content (translations, definitions)",
     "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
