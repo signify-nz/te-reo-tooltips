@@ -96,19 +96,19 @@ class WordPair extends DataObject
         $limitedConfig->setOption('valid_elements', '');
         $first = HTMLEditorField::create('Base', 'Base Language')
             ->setEditorConfig($limitedConfig)
-            ->setRows(1)
+            ->setRows(5)
             ->setDescription('Use this field for an untranslated word, typically upper-case e.g. \'Help\'');
         $second = HTMLEditorField::create('Destination', 'Destination Language')
             ->setEditorConfig($limitedConfig)
-            ->setRows(1)
+            ->setRows(5)
             ->setDescription('Use this field for the upper-case version of your translation e.g. \'Āwhina\'');
         // Hidden fields are generated to pass info to the custom validator
         $third = HiddenField::create('DictionaryID', 'Dictionary ID');
         $fourth = HiddenField::create('ID', 'ID');
         $fifth = HTMLEditorField::create('DestinationAlternate', 'Destination Language (optional)')
-        ->setEditorConfig($limitedConfig)
-        ->setDescription('Use this field for the lower-case version of your translation e.g. \'āwhina\'')
-        ->setRows(1);
+            ->setEditorConfig($limitedConfig)
+            ->setDescription('Use this field for the lower-case version of your translation e.g. \'āwhina\'')
+            ->setRows(5);
         $fields = new FieldList([
             $first,
             $second,
@@ -127,8 +127,8 @@ class WordPair extends DataObject
 
         if (
             $this->Dictionary()->WordPairs()->filter([
-            'Base' => $this->Base,
-            'ID:ExactMatch:not' => $this->ID
+                'Base' => $this->Base,
+                'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
             return $result->addError('This base word/phrase already exists!');
