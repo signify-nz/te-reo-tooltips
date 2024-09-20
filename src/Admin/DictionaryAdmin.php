@@ -93,8 +93,8 @@ class DictionaryAdmin extends LeftAndMain
                     ->setSource($siteConfig->Dictionaries()->map('ID', 'Title'))
                     ->setValue(
                         $siteConfig->ActiveDictionary()->exists()
-                        ? $siteConfig->ActiveDictionary()->ID
-                        : $siteConfig->Dictionaries()->first()->ID
+                            ? $siteConfig->ActiveDictionary()->ID
+                            : $siteConfig->Dictionaries()->first()->ID
                     )
             );
             if (!$siteConfig->ActiveDictionary()->exists()) {
@@ -142,8 +142,7 @@ class DictionaryAdmin extends LeftAndMain
         if (Permission::check('ADMIN') || Permission::check('TOOLTIP_DICTIONARY_RIGHTS')) {
             $actions = new FieldList(
                 FormAction::create('saveSiteConfig', _t('CMSMain.SAVE', 'Save'))
-                    ->addExtraClass('btn btn-primary')
-                    ->setAttribute('data-icon', 'accept')
+                    ->addExtraClass('btn btn-primary font-icon-save')
             );
         } else {
             $actions = new FieldList();
