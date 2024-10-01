@@ -274,7 +274,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
     const startOffset = 74;
     const endOffset = 7;
     return content.replace(
-      /(<span class='TeReoTooltip' style='text-decoration: underline 1px dashed;'>)(.+?)(<\/span>)/g,
+      /(<span class="TeReoTooltip" style="text-decoration: underline 1px dashed;">)(.+?)(<\/span>)/g,
       (match) => {
         restoration = match.slice(startOffset, match.length - endOffset);
         dictionaryMap.forEach((value, key) => {
