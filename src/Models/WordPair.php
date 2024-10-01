@@ -94,18 +94,18 @@ class WordPair extends DataObject
             ['363', 'u - macron']
         ]);
         $limitedConfig->setOption('valid_elements', '');
-        $first = HTMLEditorField::create('Base', 'Base Language')
+        $first = HTMLEditorField::create('Base', 'Base Translation')
             ->setEditorConfig($limitedConfig)
             ->setRows(5)
             ->setDescription('Use this field for an untranslated word, typically upper-case e.g. \'Help\'');
-        $second = HTMLEditorField::create('Destination', 'Destination Language')
+        $second = HTMLEditorField::create('Destination', 'Destination Translation')
             ->setEditorConfig($limitedConfig)
             ->setRows(5)
             ->setDescription('Use this field for the upper-case version of your translation e.g. \'Āwhina\'');
         // Hidden fields are generated to pass info to the custom validator
         $third = HiddenField::create('DictionaryID', 'Dictionary ID');
         $fourth = HiddenField::create('ID', 'ID');
-        $fifth = HTMLEditorField::create('DestinationAlternate', 'Destination Language (optional)')
+        $fifth = HTMLEditorField::create('DestinationAlternate', 'Alt Destination Translation (optional)')
             ->setEditorConfig($limitedConfig)
             ->setDescription('Use this field for the lower-case version of your translation e.g. \'āwhina\'')
             ->setRows(5);
