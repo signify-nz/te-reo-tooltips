@@ -18,7 +18,7 @@ class WordPairValidator extends Validator
     {
         // $valid = parent::php($data);
         $result = true;
-        $this->target = strip_tags($data['Base']);
+        $this->target = strip_tags($data['Base'] ?? '');
         $this->filter = [
             'Base:ExactMatch:case' => $this->target,
             'ID:ExactMatch:not' => $data['ID']
@@ -35,7 +35,7 @@ class WordPairValidator extends Validator
                 'bad'
             );
         };
-        if (str_contains($data['Base'], '​')) {
+        if (str_contains($data['Base'] ?? '', '​')) {
             $result = false;
             $this->validationError(
                 'Base',

@@ -133,10 +133,10 @@ class WordPair extends DataObject
         ) {
             return $result->addError('This base word/phrase already exists!');
         }
-        if (str_contains($this->Base, '​') || str_contains($this->Base, PHP_EOL)) {
+        if (str_contains($this->Base ?? '', '​') || str_contains($this->Base ?? '', PHP_EOL)) {
             return $result->addError('A base word/phrase not contain any new lines or abnormal spaces.');
         }
-        if (strlen(strip_tags($this->Base)) > 50) {
+        if (strlen(strip_tags($this->Base ?? '')) > 50) {
             return $result->addError('A base word/phrase is limited to 50 characters.');
         }
         return $result;
@@ -160,9 +160,9 @@ class WordPair extends DataObject
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
-        $this->Base = strip_tags($this->Base);
-        $this->Destination = strip_tags($this->Destination);
-        $this->DestinationAlternate = strip_tags($this->DestinationAlternate);
-        $this->Sort = strlen($this->Base);
+        $this->Base = strip_tags($this->Base ?? '');
+        $this->Destination = strip_tags($this->Destination ?? '');
+        $this->DestinationAlternate = strip_tags($this->DestinationAlternate ?? '');
+        $this->Sort = strlen($this->Base ?? '');
     }
 }
