@@ -193,12 +193,22 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
       };
     }
   }
+  
+  function getSubsiteId() {
+    const subsiteSelect = document.getElementById('SubsitesSelect');
+    if (subsiteSelect) {
+      const subsiteId = subsiteSelect.value;
+      return subsiteId;
+    } else {
+      return 0;
+    }
+  }
 
   // Post request can handle much larger quantities
   // Tested with 15000 word request with approx 1 sec delay
   function translateThroughAPI(textContent) {
     const request = new XMLHttpRequest();
-    const path = '/api/v1/dictionary/translateThroughInterface';
+    const path = '/api/v1/dictionary/translateThroughInterface?SubsiteID=' + getSubsiteId();
     request.open('POST', path, true);
     const tokenElement = document.getElementsByName('SecurityID')[0];
     const token = tokenElement.getAttribute('value');
@@ -216,7 +226,7 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   // pass dictionary ID as argument to receive that dictionary, pass 0 to get currently dictionary
   function getDictionary(id) {
     const request = new XMLHttpRequest();
-    const path = `/api/v1/dictionary/dictionaries/${id}`;
+    const path = `/api/v1/dictionary/dictionaries/${id}?SubsiteID=` + getSubsiteId();
     request.open('GET', path);
     const tokenElement = document.getElementsByName('SecurityID')[0];
     const token = tokenElement.getAttribute('value');
@@ -236,7 +246,8 @@ tinymce.PluginManager.add('TeReoPlugin', (editor, url) => {
   function getDictionaries() {
     // needs to get only this siteconfig dicts
     const request = new XMLHttpRequest();
-    const path = '/api/v1/dictionary/index/';
+    const path = '/api/v1/dictionary/index/?SubsiteID=' + getSubsiteId();
+
     request.open('GET', path);
     const tokenElement = document.getElementsByName('SecurityID')[0];
     const token = tokenElement.getAttribute('value');

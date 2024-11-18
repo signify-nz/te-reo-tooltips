@@ -7,7 +7,6 @@ use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Forms\FormAction;
-use SilverStripe\Subsites\Model\Subsite;
 
 /**
  * Dictionary
@@ -33,7 +32,6 @@ class Dictionary extends DataObject
     ];
 
     private static $has_one = [
-        'Subsite' => Subsite::class,
         'SiteConfig' => SiteConfig::class,
     ];
 
@@ -70,10 +68,6 @@ class Dictionary extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        if (class_exists(Subsite::class)){
-            $fields->push(HiddenField::create('SubsiteID', 'SubsiteID', SubsiteState::singleton()->getSubsiteId()));
-        }
 
         $fields->removeByName([
             'SiteConfigID',

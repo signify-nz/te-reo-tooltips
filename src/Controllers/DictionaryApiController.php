@@ -10,6 +10,8 @@ use Signify\TeReoTooltips\Models\Dictionary;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
+use SilverStripe\Subsites\Model\Subsite;
+use SilverStripe\Subsites\State\SubsiteState;
 
 /**
  * DictionaryApiController
@@ -71,6 +73,12 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
+
+        if ($request->param('SubsiteID')) {
+            $subsiteState = SubsiteState::create();
+            $subsiteState->setSubsiteId($request->param('SubsiteID'));
+        }
+
         $dictionaries = SiteConfig::current_site_config()->Dictionaries();
 
         if ($dictionaries) {
@@ -127,6 +135,12 @@ class DictionaryApiController extends Controller
             $this->getResponse()->setBody($pairList);
         } else {
             //this needs to handle the event where no such dictionary exists
+
+            if ($request->param('SubsiteID')) {
+                $subsiteState = SubsiteState::create();
+                $subsiteState->setSubsiteId($request->param('SubsiteID'));
+            }
+
             $dict = SiteConfig::current_site_config()->getField('ActiveDictionary');
             $pairs = $dict->WordPairs()->sort()->reverse();
             $pairList = [];
@@ -162,6 +176,12 @@ class DictionaryApiController extends Controller
         if (!$this->authorisedUser()) {
             return $this->getResponse();
         };
+
+        if ($request->param('SubsiteID')) {
+            $subsiteState = SubsiteState::create();
+            $subsiteState->setSubsiteId($request->param('SubsiteID'));
+        }
+
         $queryText = $request->getBody();
         $translation = $this->translator->translateBody($queryText);
         $this->getResponse()->setBody($translation);
