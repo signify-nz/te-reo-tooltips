@@ -33,7 +33,7 @@ class DictionaryAdmin extends LeftAndMain
 
     // private static $menu_icon = 'framework/admin/images/menu-icons/16x16/gears.png';
 
-    private static $tree_class = 'SiteConfig';
+    private static $tree_class = SiteConfig::class;
 
     private static $required_permission_codes = array('TOOLTIP_VIEW_OBJECTS');
 
