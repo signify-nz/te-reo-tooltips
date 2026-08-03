@@ -2,7 +2,7 @@
 
 namespace Signify\TeReoTooltips\Validators;
 
-use SilverStripe\Forms\Validator;
+use SilverStripe\Forms\Validation\Validator;
 use Signify\TeReoTooltips\Models\Dictionary;
 
 /**
