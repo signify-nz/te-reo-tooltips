@@ -6,7 +6,7 @@ use Signify\TeReoTooltips\Services\LocalTranslator;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\Core\Injector\Injectable;
 
 /**
