@@ -2,7 +2,7 @@
 
 namespace Signify\TeReoTooltips\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use Signify\TeReoTooltips\Models\Dictionary;
 
 /**
@@ -10,7 +10,7 @@ use Signify\TeReoTooltips\Models\Dictionary;
  *
  * Generates a user interface for managing the Dictionary and WordPair DataObjects
  */
-class SiteConfigExtension extends DataExtension
+class SiteConfigExtension extends Extension
 {
     private static $has_many = [
         'Dictionaries' => Dictionary::class,

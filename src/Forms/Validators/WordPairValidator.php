@@ -2,7 +2,7 @@
 
 namespace Signify\TeReoTooltips\Validators;
 
-use SilverStripe\Forms\Validator;
+use SilverStripe\Forms\Validation\Validator;
 use Signify\TeReoTooltips\Models\Dictionary;
 
 /**
@@ -16,7 +16,6 @@ class WordPairValidator extends Validator
 
     public function php($data)
     {
-        // $valid = parent::php($data);
         $result = true;
         $this->target = strip_tags($data['Base'] ?? '');
         $this->filter = [
@@ -27,7 +26,6 @@ class WordPairValidator extends Validator
         if (
             $duplicate->exists()
         ) {
-            // echo 'invalid';
             $result = false;
             $this->validationError(
                 'Base',
@@ -43,16 +41,7 @@ class WordPairValidator extends Validator
                 'bad'
             );
         };
-        // foreach(Dictionary::get()->byID($data['DictionaryID'])->WordPairs() as $pair){
-        //     if ($data['Base'] === $pair->Base){
-        //         $result = false;
-        //     }
-        //     $this->validationError(
-        //         'Base',
-        //         'This base word already exists!',
-        //         'bad'
-        //     );
-        // };
+
         return $result;
     }
 }

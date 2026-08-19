@@ -2,7 +2,7 @@
 
 namespace Signify\TeReoTooltips\Models;
 
-use SilverStripe\ORM\ArrayLib;
+use SilverStripe\Core\ArrayLib;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HiddenField;
@@ -11,8 +11,9 @@ use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Security\Permission;
 use Signify\TeReoTooltips\Validators\WordPairValidator;
-use SilverStripe\Forms\CompositeValidator;
-use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Forms\Validation\CompositeValidator;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
+use SilverStripe\Core\Validation\ValidationResult;
 
 /**
  * WordPair
@@ -121,9 +122,9 @@ class WordPair extends DataObject
     }
 
     // Allows validation when additions are made from the text editor
-    public function validate()
+    public function validate(): ValidationResult
     {
-        $result = ValidationResult::create();
+        $result = parent::validate();
 
         if (
             $this->Dictionary()->WordPairs()->filter([
@@ -131,13 +132,13 @@ class WordPair extends DataObject
                 'ID:ExactMatch:not' => $this->ID
             ])->exists()
         ) {
-            return $result->addError('This base word/phrase already exists!');
+            $result->addError('This base word/phrase already exists!');
         }
         if (str_contains($this->Base ?? '', '​') || str_contains($this->Base ?? '', PHP_EOL)) {
-            return $result->addError('A base word/phrase not contain any new lines or abnormal spaces.');
+            $result->addError('A base word/phrase not contain any new lines or abnormal spaces.');
         }
         if (strlen(strip_tags($this->Base ?? '')) > 50) {
-            return $result->addError('A base word/phrase is limited to 50 characters.');
+            $result->addError('A base word/phrase is limited to 50 characters.');
         }
         return $result;
     }
@@ -146,15 +147,17 @@ class WordPair extends DataObject
     public function getCMSCompositeValidator(): CompositeValidator
     {
         $validator = parent::getCMSCompositeValidator();
-        $validator->addValidator(
-            WordPairValidator::create()
-        );
-        return $validator;
-    }
 
-    public function getCMSValidator()
-    {
-        return new RequiredFields(array('Base', 'Destination'));
+        $validator->addValidator(
+            RequiredFieldsValidator::create([
+                'Base',
+                'Destination'
+            ])
+        );
+
+        $validator->addValidator(WordPairValidator::create());
+
+        return $validator;
     }
 
     public function onBeforeWrite()
